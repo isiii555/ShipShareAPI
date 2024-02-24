@@ -1,0 +1,13 @@
+.vscode/
+.vs/
+bin/
+obj/
+TestResults/
+publish/
+logs/
+*.dbmdl
+*.jfm
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
