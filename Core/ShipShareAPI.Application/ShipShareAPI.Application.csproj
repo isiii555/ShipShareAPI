@@ -7,11 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ShipShareAPI.Domain\ShipShareAPI.Domain.csproj" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Abstraction\" />
+    <ProjectReference Include="..\ShipShareAPI.Domain\ShipShareAPI.Domain.csproj" />
   </ItemGroup>
 
 </Project>

@@ -9,10 +9,9 @@ namespace ShipShareAPI.Domain.Entities
 {
     public class SenderPost : Post
     {
-        public string? ItemPhoto { get; set; }
+        public List<string>? ItemPhotos { get; set; }
         public string ItemType { get; set; } = null!;
         public float ItemWeight { get; set; }
-        public bool IsAvailable { get; set; }
 
     }
 }

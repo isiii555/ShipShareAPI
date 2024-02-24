@@ -5,19 +5,19 @@ VisualStudioVersion = 17.8.34511.84
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{666291A8-F205-415F-AC04-58D787C8BA05}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShipShareAPI.Application", "Core\ShipShareAPI.Application\ShipShareAPI.Application.csproj", "{6D94167F-3894-4B23-BD64-A7A1994D72E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShipShareAPI.Application", "Core\ShipShareAPI.Application\ShipShareAPI.Application.csproj", "{6D94167F-3894-4B23-BD64-A7A1994D72E2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{C9D4606F-32E5-4150-B281-289294B9DFF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShipShareAPI.Infrastructure", "Infrastructure\ShipShareAPI.Infrastructure\ShipShareAPI.Infrastructure.csproj", "{39045DCB-B86A-40FB-BFC9-59033EEE6549}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShipShareAPI.Infrastructure", "Infrastructure\ShipShareAPI.Infrastructure\ShipShareAPI.Infrastructure.csproj", "{39045DCB-B86A-40FB-BFC9-59033EEE6549}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShipShareAPI.Persistence", "Infrastructure\ShipShareAPI.Persistence\ShipShareAPI.Persistence.csproj", "{FA046820-DF1C-4B6B-B880-97678F83B3E9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShipShareAPI.Persistence", "Infrastructure\ShipShareAPI.Persistence\ShipShareAPI.Persistence.csproj", "{FA046820-DF1C-4B6B-B880-97678F83B3E9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{7F193F43-CE75-40D6-821B-5528C1E091E7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShipShareAPI.API", "Presentation\ShipShareAPI.API\ShipShareAPI.API.csproj", "{51848A8C-B9F4-4688-8990-0ED49B184902}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShipShareAPI.API", "Presentation\ShipShareAPI.API\ShipShareAPI.API.csproj", "{51848A8C-B9F4-4688-8990-0ED49B184902}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShipShareAPI.Domain", "Core\ShipShareAPI.Domain\ShipShareAPI.Domain.csproj", "{DAFC00E9-A9A0-44B6-A261-A38F2282CD3F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShipShareAPI.Domain", "Core\ShipShareAPI.Domain\ShipShareAPI.Domain.csproj", "{DAFC00E9-A9A0-44B6-A261-A38F2282CD3F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
