@@ -1,3 +1,5 @@
+using Serilog;
+using Serilog.Context;
 using ShipShareAPI.API;
 using ShipShareAPI.API.Extensions;
 using ShipShareAPI.Persistence;
@@ -5,11 +7,9 @@ using ShipShareAPI.Persistence.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
+builder.AddSerilog();
 builder.Services.AddCorsExtension();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext(builder.Configuration);
@@ -18,9 +18,20 @@ builder.Services.AddInfrastructureServices();
 
 var app = builder.Build();
 
+app.ConfigureExceptionHandler(app.Services.GetRequiredService<ILogger<Program>>());
+
 app.UseCors();
 
-// Configure the HTTP request pipeline.
+//app.UseHttpLogging();
+
+
+//app.Use(async (context, next) =>
+//{
+//    var username = context.User?.Identity?.IsAuthenticated is not null || true ? context.User.Identity.Name : null;
+//    LogContext.PushProperty("user_name", username?.ToString() ?? null);
+//    await next.Invoke();
+//});
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
