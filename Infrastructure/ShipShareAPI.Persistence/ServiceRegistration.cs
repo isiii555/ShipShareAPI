@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ShipShareAPI.Application.Interfaces.Auth;
 using ShipShareAPI.Application.Interfaces.Repositories;
 using ShipShareAPI.Application.Interfaces.Services;
+using ShipShareAPI.Persistence.Concretes.Auth;
 using ShipShareAPI.Persistence.Concretes.Repositories;
 using ShipShareAPI.Persistence.Concretes.Services;
 using ShipShareAPI.Persistence.Context;
@@ -25,10 +27,12 @@ namespace ShipShareAPI.Persistence
             return services;
         }
 
-        public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
+        public static IServiceCollection AddPersistenceServices(this IServiceCollection services)
         {
             services.AddScoped<ISenderPostsRepository, SenderPostsRepository>();
             services.AddScoped<IUploadImageToStorageService,UploadImageToStorageService>();
+            services.AddScoped<ISignInManager,SignInManager>();
+            services.AddScoped<IUserManager, UserManager>();
             return services;
         }
     }
