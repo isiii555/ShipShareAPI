@@ -1,4 +1,5 @@
-﻿using ShipShareAPI.Domain.Entities;
+﻿using ShipShareAPI.Application.Dto.Token;
+using ShipShareAPI.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

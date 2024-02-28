@@ -19,6 +19,8 @@ namespace ShipShareAPI.Persistence.Context
         public DbSet<User> Users { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<RoleUser> RoleUser { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()
@@ -30,6 +32,15 @@ namespace ShipShareAPI.Persistence.Context
                 .HasMany(u => u.SenderPosts)
                 .WithOne(p => p.User)
                 .HasForeignKey(p => p.UserId);
+
+            modelBuilder.Entity<User>()
+            .HasMany(i => i.Roles)
+            .WithMany(u => u.Users);
+
+            modelBuilder.Entity<Role>().HasData(
+                new Role { Id = Guid.NewGuid(), Name = "User" },
+                new Role { Id = Guid.NewGuid(), Name = "Admin" }
+            );
 
             base.OnModelCreating(modelBuilder);
         }
@@ -44,10 +55,13 @@ namespace ShipShareAPI.Persistence.Context
         {
             foreach (var item in ChangeTracker.Entries())
             {
-                ((BaseEntity)item.Entity).LastModifiedDate = DateTime.Now;
-                if (item.State == EntityState.Added)
+                if (item.Entity is BaseEntity entity)
                 {
-                    ((BaseEntity)item.Entity).CreatedDate = DateTime.Now;
+                    entity.LastModifiedDate = DateTime.Now;
+                    if (item.State == EntityState.Added)
+                    {
+                        entity.CreatedDate = DateTime.Now;
+                    }
                 }
             }
         }

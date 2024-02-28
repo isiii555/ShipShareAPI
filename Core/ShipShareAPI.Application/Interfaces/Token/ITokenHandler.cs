@@ -1,7 +1,10 @@
-﻿namespace ShipShareAPI.Application.Interfaces.Token
+﻿using ShipShareAPI.Domain.Entities;
+using System.Security.Claims;
+
+namespace ShipShareAPI.Application.Interfaces.Token
 {
     public interface ITokenHandler
     {
-        Dto.Token.Token CreateAccessToken();
+        Dto.Token.TokenDto CreateAccessToken(User user, IEnumerable<Claim> claims);
     }
 }

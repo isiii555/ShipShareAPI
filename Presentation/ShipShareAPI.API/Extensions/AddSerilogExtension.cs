@@ -18,25 +18,25 @@ namespace ShipShareAPI.API.Extensions
                 AutoCreateSqlTable = true,
             };
 
-            //var colOptions = new ColumnOptions()
-            //{
-            //    AdditionalColumns = new Collection<SqlColumn>()
-            //            {
-            //                new SqlColumn()
-            //                {
-            //                    ColumnName = "user_name",
-            //                    DataType = System.Data.SqlDbType.NVarChar,
-            //                },
-            //            }
-            //};
+            var colOptions = new ColumnOptions()
+            {
+                AdditionalColumns = new Collection<SqlColumn>()
+                        {
+                            new SqlColumn()
+                            {
+                                ColumnName = "user_name",
+                                DataType = System.Data.SqlDbType.NVarChar
+                            },
+                        }
+            };
 
             Logger log = new LoggerConfiguration()
                 .WriteTo.Console()
                 .WriteTo.File("logs/log.txt")
                 .WriteTo.MSSqlServer(
                 builder.Configuration.GetConnectionString("ShipShareConStr"),
-                sinkOptions: sinkOptions
-                //columnOptions: colOptions
+                sinkOptions: sinkOptions,
+                columnOptions: colOptions
                 )
                 .Enrich.FromLogContext()
                 .CreateLogger();

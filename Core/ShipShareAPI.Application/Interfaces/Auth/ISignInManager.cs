@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ShipShareAPI.Application.Dto.Token;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,6 @@ namespace ShipShareAPI.Application.Interfaces.Auth
 {
     public interface ISignInManager
     {
-        Task<bool> SignInAsync(string email,string password);
+        Task<Dto.Token.TokenDto> SignInAsync(string email,string password);
     }
 }

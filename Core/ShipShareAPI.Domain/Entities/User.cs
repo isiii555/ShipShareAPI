@@ -12,16 +12,18 @@ namespace ShipShareAPI.Domain.Entities
     {
         public string Username { get; set; } = null!;
         public string Email { get; set; } = null!;
-        public string Password { get; set; } = null!;
+        public byte[] PasswordHash { get; set; } = null!;
+        public byte[] PasswordSalt { get; set; } = null!;
         public string? ProfilePicture { get; set; }
-        public string FirstName { get; set; } = null!;
-        public string LastName { get; set; } = null!;
-        public string Gender { get; set; } = null!;
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public string? Gender { get; set; }
         public DateTime DateOfBirth { get; set; }
         public string? Bio { get; set; }
         public DateTime LastLogin { get; set; }
         public bool IsActive { get; set; }
         public bool IsEmailConfirmed { get; set; } = false;
+        public List<Role>? Roles { get; set; }
         public List<TravellerPost>? TravellerPosts { get; set; }
         public List<SenderPost>? SenderPosts { get; set; }
         public List<Conversation>? Conversations { get; set; }

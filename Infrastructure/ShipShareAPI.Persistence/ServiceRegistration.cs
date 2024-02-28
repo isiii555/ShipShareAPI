@@ -33,6 +33,7 @@ namespace ShipShareAPI.Persistence
             services.AddScoped<IUploadImageToStorageService,UploadImageToStorageService>();
             services.AddScoped<ISignInManager,SignInManager>();
             services.AddScoped<IUserManager, UserManager>();
+            services.AddScoped<IRoleManager, RoleManager>();
             return services;
         }
     }
