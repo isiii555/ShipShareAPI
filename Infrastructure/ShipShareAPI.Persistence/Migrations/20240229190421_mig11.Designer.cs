@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ShipShareAPI.Persistence.Context;
 
@@ -11,9 +12,11 @@ using ShipShareAPI.Persistence.Context;
 namespace ShipShareAPI.Persistence.Migrations
 {
     [DbContext(typeof(ShipShareDbContext))]
-    partial class ShipShareDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240229190421_mig11")]
+    partial class mig11
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -223,14 +226,14 @@ namespace ShipShareAPI.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("662860f8-3774-455d-9476-a3caaa5ee1f9"),
+                            Id = new Guid("4e2e73ed-3bfe-4f1a-bfce-120621f5a617"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             LastModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "User"
                         },
                         new
                         {
-                            Id = new Guid("2d1ef8e6-00a3-4e75-a281-2e59149f7379"),
+                            Id = new Guid("eb5155d1-ecad-443d-ab84-d1473dd1c42b"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             LastModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Admin"

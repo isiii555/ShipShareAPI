@@ -22,7 +22,7 @@ namespace ShipShareAPI.Persistence
         {
             services.AddDbContext<ShipShareDbContext>(opt =>
             {
-                opt.UseSqlServer(configuration.GetConnectionString("ShipShareConStr")).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+                opt.UseSqlServer(configuration.GetConnectionString("ShipShareConStr")).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging();
             });
             return services;
         }

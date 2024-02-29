@@ -6,5 +6,6 @@ namespace ShipShareAPI.Application.Interfaces.Token
     public interface ITokenHandler
     {
         Dto.Token.TokenDto CreateAccessToken(User user, IEnumerable<Claim> claims);
+        string CreateRefreshToken();
     }
 }

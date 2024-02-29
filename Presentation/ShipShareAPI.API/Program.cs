@@ -25,23 +25,41 @@ builder.Services.AddDbContext(builder.Configuration);
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Token"));
 builder.Services.Configure<AzureOptions>(builder.Configuration.GetSection("Azure"));
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
-builder.Services.AddPersistenceServices();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddInfrastructureServices();
+builder.Services.AddPersistenceServices();
 builder.Services.AddJwtAuth(builder.Configuration);
 
-builder.Services.AddSwaggerGen(op =>
+builder.Services.AddSwaggerGen(opt =>
 {
-    op.AddSecurityDefinition("oauth", new OpenApiSecurityScheme
+    opt.SwaggerDoc("v1", new OpenApiInfo { Title = "MyAPI", Version = "v1" });
+    opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = "Standard Auth header using the Bearer scheme (\"Bearer {token}\")",
         In = ParameterLocation.Header,
+        Description = "Please enter token",
         Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "bearer"
     });
-    op.OperationFilter<SecurityRequirementsOperationFilter>();
+
+    opt.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type=ReferenceType.SecurityScheme,
+                    Id="Bearer"
+                }
+            },
+            new string[]{}
+        }
+    });
 });
 
-var app = builder.Build(); 
+var app = builder.Build();
 
 app.ConfigureExceptionHandler(app.Services.GetRequiredService<ILogger<Program>>());
 

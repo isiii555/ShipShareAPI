@@ -18,9 +18,11 @@ namespace ShipShareAPI.API.Extensions
                             ValidateLifetime = true,
                             ValidateIssuerSigningKey = true,
 
+
                             ValidAudience = configuration["Token:Audience"],
                             ValidIssuer = configuration["Token:Issuer"],
                             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Token:SecurityKey"]!)),
+                            LifetimeValidator = (notBefore, expires, securityToken, validationParameters) => expires is not null ? expires > DateTime.UtcNow : false,
                         };
                     });
             return services;

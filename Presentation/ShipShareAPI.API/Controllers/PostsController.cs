@@ -1,4 +1,5 @@
 ﻿using Ardalis.GuardClauses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShipShareAPI.Application.Dto.Post;
@@ -8,6 +9,7 @@ namespace ShipShareAPI.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize]
     public class PostsController : ControllerBase
     {
         private readonly ISenderPostsRepository _senderPostsRepository;
@@ -17,18 +19,21 @@ namespace ShipShareAPI.API.Controllers
         }
 
         [HttpGet("getAllSenderPosts")]
+        [Authorize(Roles = "User")]
         public async Task<IActionResult> GetAllSenderPosts()
         {
             return Ok(await _senderPostsRepository.GetAllPosts());
         }
 
         [HttpPost("createSenderPost")]
+        [Authorize(Roles = "User")]
         public async Task<IActionResult> CreateSenderPost(CreateSenderPostRequest createSenderPostRequest)
         {
             return Ok(await _senderPostsRepository.CreatePost(createSenderPostRequest));
         }
 
         [HttpPost("updateSenderPost")]
+        [Authorize(Roles = "User")]
         public async Task<IActionResult> UpdateSenderPost(Guid postId,UpdateSenderPostRequest updateSenderPostRequest)
         {
             var result = await _senderPostsRepository.UpdatePost(postId, updateSenderPostRequest);
@@ -39,6 +44,7 @@ namespace ShipShareAPI.API.Controllers
         }
 
         [HttpDelete("deleteSenderPost")]
+        [Authorize(Roles = "User")]
         public async Task<IActionResult> DeleteSenderPost(Guid postId)
         {
             var result = await _senderPostsRepository.DeletePost(postId);
@@ -46,6 +52,13 @@ namespace ShipShareAPI.API.Controllers
                 return Ok(result);
             else
                 return BadRequest(result);
+        }
+
+        [HttpGet("test")]
+        [Authorize(Roles = "User")]
+        public IActionResult Test(string text)
+        {
+            return Ok("dasak");
         }
     }
 }

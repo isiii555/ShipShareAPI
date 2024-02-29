@@ -3,6 +3,7 @@ using Mapster;
 using Microsoft.EntityFrameworkCore;
 using ShipShareAPI.Application.Dto.Post;
 using ShipShareAPI.Application.Dto.Review;
+using ShipShareAPI.Application.Interfaces.Providers;
 using ShipShareAPI.Application.Interfaces.Repositories;
 using ShipShareAPI.Application.Interfaces.Services;
 using ShipShareAPI.Domain.Entities;
@@ -19,21 +20,28 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
     {
         private readonly ShipShareDbContext _shipShareDbContext;
         private readonly IUploadImageToStorageService _uploadImageToStorageService;
+        private readonly IRequestUserProvider _requestUserProvider;
 
-        public SenderPostsRepository(ShipShareDbContext shipShareDbContext, IUploadImageToStorageService uploadImageToStorageService)
+        public SenderPostsRepository(ShipShareDbContext shipShareDbContext, IUploadImageToStorageService uploadImageToStorageService, IRequestUserProvider requestUserProvider)
         {
             _shipShareDbContext = Guard.Against.Null(shipShareDbContext);
             _uploadImageToStorageService = Guard.Against.Null(uploadImageToStorageService);
+            _requestUserProvider = Guard.Against.Null(requestUserProvider);
         }
 
         public async Task<SenderPostDto> CreatePost(CreateSenderPostRequest createSenderPostRequest)
         {
             var post = createSenderPostRequest.Adapt<SenderPost>();
-            post!.ItemPhotos!.Clear();
-            foreach (var formfile in createSenderPostRequest!.ItemPhotos!)
+            post.UserId = _requestUserProvider.GetUserInfo()!.Id;
+            if (post.ItemPhotos is not null)
+                post!.ItemPhotos!.Clear();
+            if (createSenderPostRequest.ItemPhotos is not null)
             {
-                var imageUrl = _uploadImageToStorageService.UploadImageToStorage(formfile);
-                post!.ItemPhotos!.Add(imageUrl);
+                foreach (var formfile in createSenderPostRequest!.ItemPhotos!)
+                {
+                    var imageUrl = _uploadImageToStorageService.UploadImageToStorage(formfile);
+                    post!.ItemPhotos!.Add(imageUrl);
+                }
             }
             var entity = await _shipShareDbContext.SenderPosts.AddAsync(post);
             await _shipShareDbContext.SaveChangesAsync();
@@ -48,6 +56,7 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
             if (post is not null)
             {
                 _shipShareDbContext.SenderPosts.Remove(post);
+                _shipShareDbContext.SaveChangesAsync();
                 return true;
             }
             else

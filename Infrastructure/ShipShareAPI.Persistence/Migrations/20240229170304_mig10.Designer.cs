@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ShipShareAPI.Persistence.Context;
 
@@ -11,9 +12,11 @@ using ShipShareAPI.Persistence.Context;
 namespace ShipShareAPI.Persistence.Migrations
 {
     [DbContext(typeof(ShipShareDbContext))]
-    partial class ShipShareDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240229170304_mig10")]
+    partial class mig10
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -223,14 +226,14 @@ namespace ShipShareAPI.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("662860f8-3774-455d-9476-a3caaa5ee1f9"),
+                            Id = new Guid("180a3761-b1ea-4113-a844-65ab43b61afe"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             LastModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "User"
                         },
                         new
                         {
-                            Id = new Guid("2d1ef8e6-00a3-4e75-a281-2e59149f7379"),
+                            Id = new Guid("3c0a5086-f74b-47ac-bb2a-dcedf98a682a"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             LastModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Admin"
@@ -336,12 +339,6 @@ namespace ShipShareAPI.Persistence.Migrations
 
                     b.Property<string>("ProfilePicture")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RefreshToken")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("RefreshTokenExpireDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("Username")
                         .IsRequired()

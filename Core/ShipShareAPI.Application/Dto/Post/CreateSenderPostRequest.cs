@@ -10,7 +10,6 @@ namespace ShipShareAPI.Application.Dto.Post
     public class CreateSenderPostRequest
     {
         public string Title { get; set; } = null!;
-        public Guid UserId { get; set; }
         public string Description { get; set; } = null!;
         public string StartDestination { get; set; } = null!;
         public string EndDestination { get; set; } = null!;

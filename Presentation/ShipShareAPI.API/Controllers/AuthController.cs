@@ -26,28 +26,37 @@ namespace ShipShareAPI.API.Controllers
         [HttpPost("signUp")]
         public async Task<ActionResult<TokenDto?>> SignUpAsync(SignUpRequest signUpRequest)
         {
-            var role = await _roleManager.GetRoleByName("User");
-            var user = new User()
+            var oldUser = await _userManager.FindByEmailAsync(signUpRequest.Email);
+            if (oldUser is null)
             {
-                Email = signUpRequest.Email,
-                Username = signUpRequest.UserName,
-                Roles = new List<Role> { role! }
-            };
-            var result = await _userManager.CreateAsync(user,signUpRequest.Password);
-
-            return result ? Ok(await _signInManager.SignInAsync(user.Email,signUpRequest.Password)) : BadRequest("Sign up failed");
+                var user = new User()
+                {
+                    Email = signUpRequest.Email,
+                    Username = signUpRequest.UserName,
+                };
+                var result = await _userManager.CreateAsync(user, signUpRequest.Password);
+                var token = await _signInManager.SignInAsync(user.Email, signUpRequest.Password);
+                return result ? Ok(token) : BadRequest("Sign Up failed");
+            }
+            return BadRequest("User with this email already exist!");
         }
 
         [HttpPost("signIn")]
         public async Task<ActionResult<TokenDto>> SignInAsync(SignInRequest signInRequest)
         {
-            var user = _userManager.FindByEmailAsync(signInRequest.Email);
+            var user = await _userManager.FindByEmailAsync(signInRequest.Email);
             if (user is not null)
             {
-                return BadRequest("User not found!");
+                return Ok(await _signInManager.SignInAsync(signInRequest.Email, signInRequest.Password));
             }
             else 
-                return Ok(await _signInManager.SignInAsync(signInRequest.Email, signInRequest.Password));
+                return BadRequest("User not found!");
+        }
+
+        [HttpPost("refreshTokenSignIn")]
+        public async Task<ActionResult<TokenDto>> RefreshTokenSignAsync([FromForm]string refreshToken)
+        {
+            return Ok(await _signInManager.RefreshTokenSignInAsync(refreshToken));
         }
     }
 }

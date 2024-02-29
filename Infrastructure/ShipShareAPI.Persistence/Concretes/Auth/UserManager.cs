@@ -15,10 +15,12 @@ namespace ShipShareAPI.Persistence.Concretes.Auth
     public class UserManager : IUserManager
     {
         private readonly ShipShareDbContext _dbContext;
+        private readonly IRoleManager _roleManager;
 
-        public UserManager(ShipShareDbContext dbContext)
+        public UserManager(ShipShareDbContext dbContext, IRoleManager roleManager)
         {
             _dbContext = Guard.Against.Null(dbContext);
+            _roleManager = roleManager;
         }
 
         public async Task<bool> CreateAsync(User user, string password)
@@ -29,6 +31,16 @@ namespace ShipShareAPI.Persistence.Concretes.Auth
                 user.PasswordHash = passwordHash;
                 user.PasswordSalt = salt;
                 _dbContext.Users.Add(user);
+                var role = await _roleManager.GetRoleByName("User");
+                if (role is not null)
+                {
+                    var roleUser = new RoleUser()
+                    {
+                        UserId = user.Id,
+                        RoleId = role.Id,
+                    };
+                    _dbContext.RoleUser.Add(roleUser);
+                }
                 await _dbContext.SaveChangesAsync();
                 return true;
             }
@@ -41,6 +53,23 @@ namespace ShipShareAPI.Persistence.Concretes.Auth
         public async Task<User?> FindByEmailAsync(string email)
         {
             return await _dbContext.Users.Include(u => u.Roles).FirstOrDefaultAsync(u => u.Email == email);
+        }
+
+        public async Task<User?> GetUserWithRefreshToken(string refreshToken)
+        {
+            return await _dbContext.Users.Include(u => u.Roles).FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+        }
+
+        public async Task UpdateRefreshToken(User user, string refreshToken, DateTime accessTokenDate)
+        {
+            if (user is not null)
+            {
+                user.RefreshToken = refreshToken;
+                user.RefreshTokenExpireDate = accessTokenDate.AddMinutes(10);
+                _dbContext.Entry(user!.Roles[0]!).State = EntityState.Detached;
+                _dbContext.Update(user);
+                await _dbContext.SaveChangesAsync();
+            }
         }
     }
 }
