@@ -5,6 +5,7 @@ using ShipShareAPI.Application.Interfaces.Auth;
 using ShipShareAPI.Application.Interfaces.Token;
 using ShipShareAPI.Domain.Entities;
 using ShipShareAPI.Persistence.Context;
+using ShipShareAPI.Persistence.Helpers;
 using System.Data;
 using System.Security.Claims;
 
@@ -46,9 +47,8 @@ namespace ShipShareAPI.Persistence.Concretes.Auth
             throw new Exception("User not found");
         }
 
-        public async Task<TokenDto> SignInAsync(string email, string password)
+        public async Task<TokenDto> SignInAsync(User user,string password)
         {
-            var user = await _userManager.FindByEmailAsync(email);
             List<string> roles = new();
             user!.Roles!.ForEach(r =>
             {
@@ -56,16 +56,22 @@ namespace ShipShareAPI.Persistence.Concretes.Auth
             });
             if (user is not null)
             {
-                var claims = new List<Claim>()
+                var check = PasswordHashHelper.ComparePassword(password, user.PasswordHash, user.PasswordSalt);
+                if (check)
                 {
-                    new Claim(ClaimTypes.Name,user.Username),
-                    new Claim(ClaimTypes.Email,user.Email),
-                    new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
-                    new Claim(ClaimTypes.Role,string.Join(",",roles)),
-                };
-                var token = _tokenHandler.CreateAccessToken(user, claims);
-                await _userManager.UpdateRefreshToken(user, token.RefreshToken, token.Expiration);
-                return token;
+                    var claims = new List<Claim>()
+                        {
+                            new Claim(ClaimTypes.Name,user.Username),
+                            new Claim(ClaimTypes.Email,user.Email),
+                            new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
+                            new Claim(ClaimTypes.Role,string.Join(",",roles)),
+                        };
+                    var token = _tokenHandler.CreateAccessToken(user, claims);
+                    await _userManager.UpdateRefreshToken(user, token.RefreshToken, token.Expiration);
+                    return token;
+                }
+                else
+                    throw new Exception("Password is wrong!");
             }
             throw new Exception("Sign in operation failed!");
         }

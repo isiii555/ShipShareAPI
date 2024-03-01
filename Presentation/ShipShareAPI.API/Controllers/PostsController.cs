@@ -9,7 +9,7 @@ namespace ShipShareAPI.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class PostsController : ControllerBase
     {
         private readonly ISenderPostsRepository _senderPostsRepository;
@@ -52,13 +52,6 @@ namespace ShipShareAPI.API.Controllers
                 return Ok(result);
             else
                 return BadRequest(result);
-        }
-
-        [HttpGet("test")]
-        [Authorize(Roles = "User")]
-        public IActionResult Test(string text)
-        {
-            return Ok("dasak");
         }
     }
 }

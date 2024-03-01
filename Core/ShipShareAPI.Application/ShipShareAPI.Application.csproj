@@ -16,8 +16,4 @@
     <ProjectReference Include="..\ShipShareAPI.Domain\ShipShareAPI.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Validators\" />
-  </ItemGroup>
-
 </Project>

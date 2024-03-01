@@ -34,9 +34,9 @@ namespace ShipShareAPI.API.Controllers
                     Email = signUpRequest.Email,
                     Username = signUpRequest.UserName,
                 };
-                var result = await _userManager.CreateAsync(user, signUpRequest.Password);
-                var token = await _signInManager.SignInAsync(user.Email, signUpRequest.Password);
-                return result ? Ok(token) : BadRequest("Sign Up failed");
+                var token = await _userManager.CreateAsync(user, signUpRequest.Password);
+                await _userManager.UpdateRefreshToken(user, token.RefreshToken, token.Expiration);
+                return Ok(token);
             }
             return BadRequest("User with this email already exist!");
         }
@@ -47,10 +47,10 @@ namespace ShipShareAPI.API.Controllers
             var user = await _userManager.FindByEmailAsync(signInRequest.Email);
             if (user is not null)
             {
-                return Ok(await _signInManager.SignInAsync(signInRequest.Email, signInRequest.Password));
+                var token = await _signInManager.SignInAsync(user, signInRequest.Password);
+                return Ok(token);
             }
-            else 
-                return BadRequest("User not found!");
+            return BadRequest("Email is wrong!");
         }
 
         [HttpPost("refreshTokenSignIn")]
