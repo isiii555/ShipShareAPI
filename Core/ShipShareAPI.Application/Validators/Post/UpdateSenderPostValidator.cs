@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using ShipShareAPI.Application.Dto.Post;
+using ShipShareAPI.Application.Dto.Post.SenderPost;
 using System;
 using System.Collections.Generic;
 using System.Linq;

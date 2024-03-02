@@ -2,7 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ShipShareAPI.Application.Dto.Post;
+using ShipShareAPI.Application.Dto.Post.SenderPost;
+using ShipShareAPI.Application.Interfaces.Providers;
 using ShipShareAPI.Application.Interfaces.Repositories;
 
 namespace ShipShareAPI.API.Controllers
@@ -10,10 +11,10 @@ namespace ShipShareAPI.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class PostsController : ControllerBase
+    public class SenderPostsController : ControllerBase
     {
         private readonly ISenderPostsRepository _senderPostsRepository;
-        public PostsController(ISenderPostsRepository senderPostsRepository)
+        public SenderPostsController(ISenderPostsRepository senderPostsRepository)
         {
             _senderPostsRepository = Guard.Against.Null(senderPostsRepository);
         }
@@ -22,17 +23,19 @@ namespace ShipShareAPI.API.Controllers
         [Authorize(Roles = "User")]
         public async Task<IActionResult> GetAllSenderPosts()
         {
-            return Ok(await _senderPostsRepository.GetAllPosts());
+            var posts = await _senderPostsRepository.GetAllPosts();
+            return Ok();
         }
 
         [HttpPost("createSenderPost")]
         [Authorize(Roles = "User")]
         public async Task<IActionResult> CreateSenderPost(CreateSenderPostRequest createSenderPostRequest)
         {
-            return Ok(await _senderPostsRepository.CreatePost(createSenderPostRequest));
+            var post = await _senderPostsRepository.CreatePost(createSenderPostRequest);
+            return Ok(post);
         }
 
-        [HttpPost("updateSenderPost")]
+        [HttpPost("updateSenderPost/{postId}")]
         [Authorize(Roles = "User")]
         public async Task<IActionResult> UpdateSenderPost(Guid postId,UpdateSenderPostRequest updateSenderPostRequest)
         {
@@ -43,7 +46,7 @@ namespace ShipShareAPI.API.Controllers
                 return BadRequest(result);
         }
 
-        [HttpDelete("deleteSenderPost")]
+        [HttpDelete("deleteSenderPost/{postId}")]
         [Authorize(Roles = "User")]
         public async Task<IActionResult> DeleteSenderPost(Guid postId)
         {
@@ -52,6 +55,14 @@ namespace ShipShareAPI.API.Controllers
                 return Ok(result);
             else
                 return BadRequest(result);
+        }
+
+        [HttpGet("getUserSenderPosts")]
+        [Authorize(Roles = "User")]
+        public async Task<IActionResult> GetUserSenderPosts()
+        {
+            var posts = await _senderPostsRepository.GetUserSenderPosts();
+            return Ok(posts);
         }
     }
 }

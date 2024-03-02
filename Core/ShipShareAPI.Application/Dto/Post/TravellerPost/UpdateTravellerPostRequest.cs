@@ -1,22 +1,18 @@
-﻿using ShipShareAPI.Domain.Entities.Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ShipShareAPI.Domain.Entities
+namespace ShipShareAPI.Application.Dto.Post.TravellerPost
 {
-    public class Post : BaseEntity
+    public class UpdateTravellerPostRequest
     {
-        public Guid UserId { get; set; }
         public string Title { get; set; } = null!;
         public double Price { get; set; }
-        public int Views { get; set; }
         public string Description { get; set; } = null!;
         public string StartDestination { get; set; } = null!;
         public string EndDestination { get; set; } = null!;
         public DateTime DeadlineDate { get; set; }
-        public User? User { get; set; }
     }
 }

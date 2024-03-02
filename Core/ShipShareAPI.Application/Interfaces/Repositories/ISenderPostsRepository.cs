@@ -1,4 +1,4 @@
-﻿using ShipShareAPI.Application.Dto.Post;
+﻿using ShipShareAPI.Application.Dto.Post.SenderPost;
 using ShipShareAPI.Application.Dto.Review;
 using ShipShareAPI.Domain.Entities;
 using System;
@@ -15,5 +15,6 @@ namespace ShipShareAPI.Application.Interfaces.Repositories
         Task<SenderPostDto> CreatePost(CreateSenderPostRequest createSenderPostRequest);
         Task<SenderPostDto?> UpdatePost(Guid postId,UpdateSenderPostRequest updateSenderPostRequest);
         Task<bool> DeletePost(Guid postId);
+        Task<List<SenderPost>> GetUserSenderPosts();
     }
 }

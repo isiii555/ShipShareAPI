@@ -1,7 +1,8 @@
 ﻿using Ardalis.GuardClauses;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
-using ShipShareAPI.Application.Dto.Post;
+using Microsoft.Extensions.Logging;
+using ShipShareAPI.Application.Dto.Post.SenderPost;
 using ShipShareAPI.Application.Dto.Review;
 using ShipShareAPI.Application.Interfaces.Providers;
 using ShipShareAPI.Application.Interfaces.Repositories;
@@ -21,12 +22,14 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
         private readonly ShipShareDbContext _shipShareDbContext;
         private readonly IUploadImageToStorageService _uploadImageToStorageService;
         private readonly IRequestUserProvider _requestUserProvider;
+        private readonly ILogger<SenderPostsRepository> _logger;
 
-        public SenderPostsRepository(ShipShareDbContext shipShareDbContext, IUploadImageToStorageService uploadImageToStorageService, IRequestUserProvider requestUserProvider)
+        public SenderPostsRepository(ShipShareDbContext shipShareDbContext, IUploadImageToStorageService uploadImageToStorageService, IRequestUserProvider requestUserProvider, ILogger<SenderPostsRepository> logger)
         {
             _shipShareDbContext = Guard.Against.Null(shipShareDbContext);
             _uploadImageToStorageService = Guard.Against.Null(uploadImageToStorageService);
             _requestUserProvider = Guard.Against.Null(requestUserProvider);
+            _logger = Guard.Against.Null(logger);
         }
 
         public async Task<SenderPostDto> CreatePost(CreateSenderPostRequest createSenderPostRequest)
@@ -45,19 +48,26 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
             }
             var entity = await _shipShareDbContext.SenderPosts.AddAsync(post);
             await _shipShareDbContext.SaveChangesAsync();
-
+            _logger.LogInformation($"{post.UserId} user created post {post.Id}!");
             var senderPostDto = entity.Entity.Adapt<SenderPostDto>();
             return senderPostDto;
         }
 
         public async Task<bool> DeletePost(Guid postId)
         {
+            var userId = _requestUserProvider?.GetUserInfo()!.Id;   
             var post = await _shipShareDbContext.SenderPosts.FirstOrDefaultAsync(p => p.Id == postId);
             if (post is not null)
             {
-                _shipShareDbContext.SenderPosts.Remove(post);
-                _shipShareDbContext.SaveChangesAsync();
-                return true;
+                if (userId == post.UserId)
+                {
+                    _shipShareDbContext.SenderPosts.Remove(post);
+                    await _shipShareDbContext.SaveChangesAsync();
+                    _logger.LogInformation($"{post.UserId} user deleted post {post.Id}!");
+                    return true;
+                }
+                else
+                    return false;
             }
             else
                 return false;
@@ -68,32 +78,46 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
             return await _shipShareDbContext.SenderPosts.ToListAsync();
         }
 
+        public async Task<List<SenderPost>> GetUserSenderPosts()
+        {
+            var userId = _requestUserProvider?.GetUserInfo()!.Id;
+            return await _shipShareDbContext.SenderPosts.Where(s => s.UserId == userId).ToListAsync();
+        }
+
         public async Task<SenderPostDto?> UpdatePost(Guid postId, UpdateSenderPostRequest updateSenderPostRequest)
         {
+            var userId = _requestUserProvider?.GetUserInfo()!.Id;
             var post = _shipShareDbContext.SenderPosts.FirstOrDefault(p => p.Id == postId);
+          
             if (post is not null)
             {
-                post.StartDestination = updateSenderPostRequest.StartDestination;
-                post.DeadlineDate = updateSenderPostRequest.DeadlineDate;
-                post.ItemType = updateSenderPostRequest.ItemType;
-                post.ItemWeight = updateSenderPostRequest.ItemWeight;
-                post.EndDestination = updateSenderPostRequest.EndDestination;
-                post.Title = updateSenderPostRequest.Title;
-                post.Description = updateSenderPostRequest.Description;
-                if (updateSenderPostRequest.ItemPhotos is not null)
+                if (post.UserId == userId)
                 {
-                    post!.ItemPhotos!.Clear();
-                    foreach (var photo in updateSenderPostRequest.ItemPhotos)
+                    post.StartDestination = updateSenderPostRequest.StartDestination;
+                    post.DeadlineDate = updateSenderPostRequest.DeadlineDate;
+                    post.ItemType = updateSenderPostRequest.ItemType;
+                    post.Price = updateSenderPostRequest.Price;
+                    post.ItemWeight = updateSenderPostRequest.ItemWeight;
+                    post.EndDestination = updateSenderPostRequest.EndDestination;
+                    post.Title = updateSenderPostRequest.Title;
+                    post.Description = updateSenderPostRequest.Description;
+                    if (updateSenderPostRequest.ItemPhotos is not null)
                     {
-                        post.ItemPhotos.Add(_uploadImageToStorageService.UploadImageToStorage(photo));
+                        post!.ItemPhotos!.Clear();
+                        foreach (var photo in updateSenderPostRequest.ItemPhotos)
+                        {
+                            post.ItemPhotos.Add(_uploadImageToStorageService.UploadImageToStorage(photo));
+                        }
                     }
+                    var entity = _shipShareDbContext.SenderPosts.Update(post);
+                    await _shipShareDbContext.SaveChangesAsync();
+                    _logger.LogInformation($"{post.UserId} user updated post {post.Id}!");
+                    var senderPostDto = entity.Entity.Adapt<SenderPostDto>();
+                    return senderPostDto;
                 }
-                var entity = _shipShareDbContext.SenderPosts.Update(post);
-                await _shipShareDbContext.SaveChangesAsync();
-                var senderPostDto = entity.Entity.Adapt<SenderPostDto>();
-                return senderPostDto;
+                throw new Exception("Error 404 not found!");
             }
-            return null;
+            throw new Exception("Error 404 not found!");
         }
     }
 }

@@ -49,13 +49,18 @@ namespace ShipShareAPI.Persistence.Concretes.Auth
 
             await _dbContext.SaveChangesAsync();
 
-            var roles = await _roleManager.GetRoleByEmail(user.Email);
+            var roles = (await _roleManager.GetRoleByEmail(user.Email)).ToList();
+            var roleNames = new List<string>();
+            roles.ForEach(r =>
+            {
+                roleNames.Add(r!.Name);
+            });
             var claims = new List<Claim>()
                 {
                     new Claim(ClaimTypes.Name,user.Username),
                     new Claim(ClaimTypes.Email,user.Email),
                     new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
-                    new Claim(ClaimTypes.Role,string.Join(",",roles)),
+                    new Claim(ClaimTypes.Role,string.Join(",",roleNames)),
                 };
             var token = _tokenHandler.CreateAccessToken(user,claims);
             return token;
@@ -77,9 +82,20 @@ namespace ShipShareAPI.Persistence.Concretes.Auth
             {
                 user.RefreshToken = refreshToken;
                 user.RefreshTokenExpireDate = accessTokenDate.AddMinutes(10);
-                _dbContext.Entry(user).State = EntityState.Detached;
-                _dbContext.Users.Update(user);
-                await _dbContext.SaveChangesAsync();
+                var trackedUser = await _dbContext.Users.FindAsync(user.Id);
+
+                if (trackedUser != null)
+                {
+                    trackedUser.RefreshToken = refreshToken;
+                    trackedUser.RefreshTokenExpireDate = accessTokenDate.AddMinutes(10);
+
+                    // Set EntityState to Modified
+                    _dbContext.Entry(trackedUser).State = EntityState.Modified;
+
+                    await _dbContext.SaveChangesAsync();
+                }
+                else 
+                     throw new Exception("User not found");
             }
         }
     }

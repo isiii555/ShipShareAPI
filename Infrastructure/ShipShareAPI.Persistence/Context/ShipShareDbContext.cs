@@ -38,11 +38,6 @@ namespace ShipShareAPI.Persistence.Context
             .WithMany(u => u.Users)
             .UsingEntity<RoleUser>();
 
-            modelBuilder.Entity<Role>().HasData(
-                new Role { Id = Guid.NewGuid(), Name = "User" },
-                new Role { Id = Guid.NewGuid(), Name = "Admin" }
-            );
-
             base.OnModelCreating(modelBuilder);
         }
 

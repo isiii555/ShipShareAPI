@@ -13,6 +13,7 @@ using ShipShareAPI.Infrastructure.Options;
 using ShipShareAPI.Persistence;
 using ShipShareAPI.Persistence.Options;
 using Swashbuckle.AspNetCore.Filters;
+using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -81,7 +82,7 @@ app.UseAuthorization();
 
 app.Use(async (context, next) =>
 {
-    var username = context.User?.Identity?.IsAuthenticated is not null || true ? context.User.Identity.Name : null;
+    var username = context.User?.Identity?.IsAuthenticated is not null || true ? context.User.FindFirstValue(ClaimTypes.Email) : null;
     LogContext.PushProperty("user_name", username?.ToString() ?? null);
     await next.Invoke();
 });
