@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace ShipShareAPI.Persistence.Concretes.Repositories
 {
-    public class SenderPostsRepository : ISenderPostsRepository
+    public class SenderPostsRepository : ISenderPostRepository
     {
         private readonly ShipShareDbContext _shipShareDbContext;
         private readonly IUploadImageToStorageService _uploadImageToStorageService;

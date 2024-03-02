@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ShipShareAPI.Persistence.Context;
 
@@ -11,9 +12,11 @@ using ShipShareAPI.Persistence.Context;
 namespace ShipShareAPI.Persistence.Migrations
 {
     [DbContext(typeof(ShipShareDbContext))]
-    partial class ShipShareDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240302150408_mig15")]
+    partial class mig15
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

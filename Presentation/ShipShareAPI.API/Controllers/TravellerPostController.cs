@@ -10,11 +10,11 @@ namespace ShipShareAPI.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class TravellerPostsController : ControllerBase
+    public class TravellerPostController : ControllerBase
     {
-        private readonly ITravellerPostsRepository _travellerPostsRepository;
+        private readonly ITravellerPostRepository _travellerPostsRepository;
 
-        public TravellerPostsController(ITravellerPostsRepository travellerPostsRepository)
+        public TravellerPostController(ITravellerPostRepository travellerPostsRepository)
         {
             _travellerPostsRepository = Guard.Against.Null(travellerPostsRepository);
         }
@@ -35,7 +35,7 @@ namespace ShipShareAPI.API.Controllers
             return Ok(post);
         }
 
-        [HttpPost("updateTravellerPost/{postId}")]
+        [HttpPut("updateTravellerPost/{postId}")]
         [Authorize(Roles = "User")]
         public async Task<ActionResult<TravellerPostDto>> UpdateTravellerPost(Guid postId, UpdateTravellerPostRequest updateTravellerPostRequest)
         {

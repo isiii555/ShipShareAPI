@@ -12,6 +12,7 @@ namespace ShipShareAPI.Domain.Entities
         public Guid UserId { get; set; }
         public string Title { get; set; } = null!;
         public double Price { get; set; }
+        public bool IsConfirmed { get; set; } = false;
         public int Views { get; set; }
         public string Description { get; set; } = null!;
         public string StartDestination { get; set; } = null!;

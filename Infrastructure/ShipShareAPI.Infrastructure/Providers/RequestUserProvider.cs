@@ -19,7 +19,8 @@ namespace ShipShareAPI.Infrastructure.Providers
         {
             var name = _httpContext.User.FindFirstValue(ClaimTypes.Name)!;
             var id = Guid.Parse(_httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)!)!;
-            var userInfo = new UserInfo(name,id);
+            var role = _httpContext.User.FindFirstValue(ClaimTypes.Role)!;
+            var userInfo = new UserInfo(name,id,role);
             return userInfo;
         }
     }

@@ -1,9 +1,7 @@
 ﻿using Ardalis.GuardClauses;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShipShareAPI.Application.Dto.Post.SenderPost;
-using ShipShareAPI.Application.Interfaces.Providers;
 using ShipShareAPI.Application.Interfaces.Repositories;
 
 namespace ShipShareAPI.API.Controllers
@@ -11,10 +9,10 @@ namespace ShipShareAPI.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class SenderPostsController : ControllerBase
+    public class SenderPostController : ControllerBase
     {
-        private readonly ISenderPostsRepository _senderPostsRepository;
-        public SenderPostsController(ISenderPostsRepository senderPostsRepository)
+        private readonly ISenderPostRepository _senderPostsRepository;
+        public SenderPostController(ISenderPostRepository senderPostsRepository)
         {
             _senderPostsRepository = Guard.Against.Null(senderPostsRepository);
         }
@@ -35,7 +33,7 @@ namespace ShipShareAPI.API.Controllers
             return Ok(post);
         }
 
-        [HttpPost("updateSenderPost/{postId}")]
+        [HttpPut("updateSenderPost/{postId}")]
         [Authorize(Roles = "User")]
         public async Task<IActionResult> UpdateSenderPost(Guid postId,UpdateSenderPostRequest updateSenderPostRequest)
         {

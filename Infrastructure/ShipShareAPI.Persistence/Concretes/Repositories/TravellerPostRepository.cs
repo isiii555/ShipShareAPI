@@ -10,13 +10,13 @@ using ShipShareAPI.Persistence.Context;
 
 namespace ShipShareAPI.Persistence.Concretes.Repositories
 {
-    public class TravellerPostsRepository : ITravellerPostsRepository
+    public class TravellerPostRepository : ITravellerPostRepository
     {
         private readonly ShipShareDbContext _shipShareDbContext;
         private readonly IRequestUserProvider _requestUserProvider;
-        private readonly ILogger<TravellerPostsRepository> _logger;
+        private readonly ILogger<TravellerPostRepository> _logger;
 
-        public TravellerPostsRepository(ShipShareDbContext dbContext, IRequestUserProvider userProvider, ILogger<TravellerPostsRepository> logger)
+        public TravellerPostRepository(ShipShareDbContext dbContext, IRequestUserProvider userProvider, ILogger<TravellerPostRepository> logger)
         {
             _shipShareDbContext = Guard.Against.Null(dbContext);
             _requestUserProvider = Guard.Against.Null(userProvider);

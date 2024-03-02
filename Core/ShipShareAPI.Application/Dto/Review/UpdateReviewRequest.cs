@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ShipShareAPI.Application.Dto.Review
 {
-    public class CreateReviewRequest
+    public class UpdateReviewRequest
     {
         public int Rating { get; set; }
         public string? Text { get; set; }

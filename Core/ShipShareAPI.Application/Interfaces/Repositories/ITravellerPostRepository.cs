@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ShipShareAPI.Application.Interfaces.Repositories
 {
-    public interface ITravellerPostsRepository
+    public interface ITravellerPostRepository
     {
         Task<List<TravellerPost>> GetAllPosts();
         Task<TravellerPostDto> CreatePost(CreateTravellerPostRequest createTravellerPostRequest);

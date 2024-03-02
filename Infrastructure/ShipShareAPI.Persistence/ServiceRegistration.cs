@@ -29,8 +29,10 @@ namespace ShipShareAPI.Persistence
 
         public static IServiceCollection AddPersistenceServices(this IServiceCollection services)
         {
-            services.AddScoped<ISenderPostsRepository, SenderPostsRepository>();
-            services.AddScoped<ITravellerPostsRepository, TravellerPostsRepository>();
+            services.AddScoped<ISenderPostRepository, SenderPostsRepository>();
+            services.AddScoped<ITravellerPostRepository, TravellerPostRepository>();
+            services.AddScoped<INotificationRepository, NotificationRepository>();
+            services.AddScoped<IReviewRepository, ReviewRepository>();
             services.AddScoped<IUploadImageToStorageService,UploadImageToStorageService>();
             services.AddScoped<ISignInManager,SignInManager>();
             services.AddScoped<IUserManager, UserManager>();

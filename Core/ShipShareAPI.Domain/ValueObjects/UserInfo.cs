@@ -10,11 +10,13 @@ namespace ShipShareAPI.Domain.ValueObjects
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
+        public string Role { get; set; }
 
-        public UserInfo(string name,Guid id)
+        public UserInfo(string name,Guid id,string role)
         {
             Name = name;
             Id = id;
+            Role = role;
         }
     }
 }

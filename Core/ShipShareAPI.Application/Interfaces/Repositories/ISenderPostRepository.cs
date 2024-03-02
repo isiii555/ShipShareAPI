@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ShipShareAPI.Application.Interfaces.Repositories
 {
-    public interface ISenderPostsRepository
+    public interface ISenderPostRepository
     {
         Task<List<SenderPost>> GetAllPosts();
         Task<SenderPostDto> CreatePost(CreateSenderPostRequest createSenderPostRequest);

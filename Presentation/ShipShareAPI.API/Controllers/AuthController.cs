@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using ShipShareAPI.Application.Dto.Auth;
 using ShipShareAPI.Application.Dto.Token;
 using ShipShareAPI.Application.Interfaces.Auth;
-using ShipShareAPI.Application.Interfaces.Token;
 using ShipShareAPI.Domain.Entities;
 
 namespace ShipShareAPI.API.Controllers
