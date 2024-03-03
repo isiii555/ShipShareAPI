@@ -28,10 +28,9 @@ namespace ShipShareAPI.Domain.Entities
         public List<Role>? Roles { get; set; }
         public List<TravellerPost>? TravellerPosts { get; set; }
         public List<SenderPost>? SenderPosts { get; set; }
-        public List<Conversation>? Conversations { get; set; }
+        public IEnumerable<Conversation>? Conversations { get; set; }
         public List<Review>? GivenReviews { get; set; }
         public List<Notification>? Notifications { get; set; }
-        public List<Transaction>? CompletedTransactions { get; set; }
 
     }
 }

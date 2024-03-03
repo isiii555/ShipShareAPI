@@ -20,7 +20,8 @@ namespace ShipShareAPI.API.Controllers
         }
 
         [HttpGet("getAllTravellerPosts")]
-        [Authorize(Roles = "User")]
+        [AllowAnonymous]
+        //[Authorize(Roles = "User")]
         public async Task<IActionResult> GetAllTravellerPostsAsync()
         {
             var posts = await _travellerPostsRepository.GetAllPosts();

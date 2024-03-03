@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ShipShareAPI.Persistence.Context;
 
@@ -11,9 +12,11 @@ using ShipShareAPI.Persistence.Context;
 namespace ShipShareAPI.Persistence.Migrations
 {
     [DbContext(typeof(ShipShareDbContext))]
-    partial class ShipShareDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240303182906_mig17")]
+    partial class mig17
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,6 +24,21 @@ namespace ShipShareAPI.Persistence.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("ConversationUser", b =>
+                {
+                    b.Property<Guid>("ConversationsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UsersId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ConversationsId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("ConversationUser");
+                });
 
             modelBuilder.Entity("ShipShareAPI.Domain.Entities.Conversation", b =>
                 {
@@ -36,34 +54,7 @@ namespace ShipShareAPI.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Conversations");
-                });
-
-            modelBuilder.Entity("ShipShareAPI.Domain.Entities.ConversationUser", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ConversationId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("LastModifiedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ConversationId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ConversationUser");
+                    b.ToTable("Conversation");
                 });
 
             modelBuilder.Entity("ShipShareAPI.Domain.Entities.Message", b =>
@@ -371,28 +362,24 @@ namespace ShipShareAPI.Persistence.Migrations
                     b.HasDiscriminator().HasValue("TravellerPost");
                 });
 
-            modelBuilder.Entity("ShipShareAPI.Domain.Entities.ConversationUser", b =>
+            modelBuilder.Entity("ConversationUser", b =>
                 {
-                    b.HasOne("ShipShareAPI.Domain.Entities.Conversation", "Conversation")
+                    b.HasOne("ShipShareAPI.Domain.Entities.Conversation", null)
                         .WithMany()
-                        .HasForeignKey("ConversationId")
+                        .HasForeignKey("ConversationsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ShipShareAPI.Domain.Entities.User", "User")
+                    b.HasOne("ShipShareAPI.Domain.Entities.User", null)
                         .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Conversation");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ShipShareAPI.Domain.Entities.Message", b =>
                 {
-                    b.HasOne("ShipShareAPI.Domain.Entities.Conversation", "Conversation")
+                    b.HasOne("ShipShareAPI.Domain.Entities.Conversation", null)
                         .WithMany("Messages")
                         .HasForeignKey("ConversationId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -403,8 +390,6 @@ namespace ShipShareAPI.Persistence.Migrations
                         .HasForeignKey("SenderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Conversation");
 
                     b.Navigation("Sender");
                 });
