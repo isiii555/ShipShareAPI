@@ -2,17 +2,12 @@
 using Microsoft.EntityFrameworkCore;
 using ShipShareAPI.Application.Dto.Token;
 using ShipShareAPI.Application.Interfaces.Auth;
+using ShipShareAPI.Application.Interfaces.Providers;
 using ShipShareAPI.Application.Interfaces.Token;
 using ShipShareAPI.Domain.Entities;
 using ShipShareAPI.Persistence.Context;
 using ShipShareAPI.Persistence.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ShipShareAPI.Persistence.Concretes.Auth
 {
@@ -21,12 +16,14 @@ namespace ShipShareAPI.Persistence.Concretes.Auth
         private readonly ShipShareDbContext _dbContext;
         private readonly IRoleManager _roleManager;
         private readonly ITokenHandler _tokenHandler;
+        private readonly IRequestUserProvider _requestUserProvider;
 
-        public UserManager(ShipShareDbContext dbContext, IRoleManager roleManager, ITokenHandler tokenHandler)
+        public UserManager(ShipShareDbContext dbContext, IRoleManager roleManager, ITokenHandler tokenHandler, IRequestUserProvider requestUserProvider)
         {
             _dbContext = Guard.Against.Null(dbContext);
             _roleManager = Guard.Against.Null(roleManager);
             _tokenHandler = Guard.Against.Null(tokenHandler);
+            _requestUserProvider = Guard.Against.Null(requestUserProvider);
         }
 
         public async Task<TokenDto> CreateAsync(User user, string password)
@@ -62,7 +59,7 @@ namespace ShipShareAPI.Persistence.Concretes.Auth
                     new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
                     new Claim(ClaimTypes.Role,string.Join(",",roleNames)),
                 };
-            var token = _tokenHandler.CreateAccessToken(user,claims);
+            var token = _tokenHandler.CreateAccessToken(user, claims);
             return token;
         }
 
@@ -71,9 +68,27 @@ namespace ShipShareAPI.Persistence.Concretes.Auth
             return await _dbContext.Users.Include(u => u.Roles).FirstOrDefaultAsync(u => u.Email == email);
         }
 
+        public async Task<User?> GetUserWithId(Guid userId)
+        {
+            return await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        }
+
         public async Task<User?> GetUserWithRefreshToken(string refreshToken)
         {
             return await _dbContext.Users.Include(u => u.Roles).FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+        }
+
+        public async Task<User?> UpdateConnectionId(string connectionId)
+        {
+            var user = await _dbContext.Users.FirstOrDefaultAsync(u => 2 == 2);
+            if (user is not null)
+            {
+                user.ConnectionId = connectionId;
+                user = _dbContext.Users.Update(user).Entity;
+                await _dbContext.SaveChangesAsync();
+                return user;
+            }
+            return null;
         }
 
         public async Task UpdateRefreshToken(User user, string refreshToken, DateTime accessTokenDate)
@@ -94,8 +109,8 @@ namespace ShipShareAPI.Persistence.Concretes.Auth
 
                     await _dbContext.SaveChangesAsync();
                 }
-                else 
-                     throw new Exception("User not found");
+                else
+                    throw new Exception("User not found");
             }
         }
     }

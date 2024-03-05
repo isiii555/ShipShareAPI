@@ -22,7 +22,7 @@ namespace ShipShareAPI.API.Controllers
         public async Task<IActionResult> GetAllSenderPosts()
         {
             var posts = await _senderPostsRepository.GetAllPosts();
-            return Ok();
+            return Ok(posts);
         }
 
         [HttpPost("createSenderPost")]

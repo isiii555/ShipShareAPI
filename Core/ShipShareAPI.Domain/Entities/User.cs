@@ -12,6 +12,7 @@ namespace ShipShareAPI.Domain.Entities
     {
         public string Username { get; set; } = null!;
         public string Email { get; set; } = null!;
+        public string? ConnectionId { get; set; }
         public byte[] PasswordHash { get; set; } = null!;
         public byte[] PasswordSalt { get; set; } = null!;
         public string? RefreshToken { get; set; }

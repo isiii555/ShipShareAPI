@@ -1,16 +1,18 @@
 using Serilog;
-using Serilog.Context;
 using ShipShareAPI.API.Extensions;
+using ShipShareAPI.API.Hubs;
 using ShipShareAPI.Application;
 using ShipShareAPI.Infrastructure;
 using ShipShareAPI.Infrastructure.Options;
 using ShipShareAPI.Persistence;
 using ShipShareAPI.Persistence.Options;
-using System.Security.Claims;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(x =>
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
+builder.Services.AddSignalR();
 builder.AddSerilog();
 builder.Services.AddCorsExtension();
 builder.Services.AddEndpointsApiExplorer();
@@ -42,17 +44,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.Use(async (context, next) =>
-{
-    var username = context.User?.Identity?.IsAuthenticated is not null || true ? context.User.FindFirstValue(ClaimTypes.Email) : null;
-    LogContext.PushProperty("user_name", username?.ToString() ?? null);
-    await next.Invoke();
-});
-
-
+app.UseAddUsernameToContextMiddleware();
+app.MapHub<ChatHub>("chat-hub");
 app.MapControllers();
 
 app.Run();

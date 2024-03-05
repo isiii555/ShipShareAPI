@@ -13,6 +13,8 @@ namespace ShipShareAPI.Application.Interfaces.Auth
         Task<User?> FindByEmailAsync(string email);
         Task<TokenDto> CreateAsync(User user, string password);
         Task UpdateRefreshToken(User user,string refreshToken,DateTime accessTokenDate);
+        Task<User?> GetUserWithId(Guid userId);
         Task<User?> GetUserWithRefreshToken(string refreshToken);
+        Task<User?> UpdateConnectionId(string connectionId);
     }
 }
