@@ -45,5 +45,13 @@ namespace ShipShareAPI.API.Controllers
             return result ? Ok(result) : BadRequest(result);
         }
 
+        [HttpGet("getUsernameWithConversationId/{conversationId}")]
+        [Authorize(Roles = "User")]
+        public async Task<ActionResult<string?>> GetNameWithConversationId(Guid conversationId)
+        {
+            var result = await _conversationRepository.GetNameWithConversationId(conversationId);
+            return result is not null ? Ok(result) : BadRequest("Not found!");
+        }
+
     }
 }

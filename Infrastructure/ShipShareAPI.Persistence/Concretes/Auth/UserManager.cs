@@ -80,7 +80,8 @@ namespace ShipShareAPI.Persistence.Concretes.Auth
 
         public async Task<User?> UpdateConnectionId(string connectionId)
         {
-            var user = await _dbContext.Users.FirstOrDefaultAsync(u => 2 == 2);
+            var userInfo = _requestUserProvider.GetUserInfo();
+            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userInfo!.Id);
             if (user is not null)
             {
                 user.ConnectionId = connectionId;

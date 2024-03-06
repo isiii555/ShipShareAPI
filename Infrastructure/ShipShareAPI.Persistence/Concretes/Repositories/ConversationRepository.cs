@@ -83,5 +83,43 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
                 .ToListAsync();
             return conversations;
         }
+        
+        public async Task<string?> GetNameWithConversationId(Guid conversationId)
+        {
+            var user = _requestUserProvider?.GetUserInfo();
+            var conversations = await _shipShareDbContext.ConversationUser.Where(cu => cu.ConversationId == conversationId).ToListAsync();
+            foreach (var item in conversations)
+            {
+                if (item.UserId != user!.Id)
+                {
+                    var userMain = await _userManager.GetUserWithId(item.UserId);
+                    if (userMain is not null)
+                    {
+                        return userMain.Username;
+                    }
+                    return null;
+                }
+            }
+            return null;
+        }
+
+        public async Task<Guid?> GetRecipientId(Guid conversationId)
+        {
+            var user = _requestUserProvider?.GetUserInfo();
+            var conversations = await _shipShareDbContext.ConversationUser.Where(cu => cu.ConversationId == conversationId).ToListAsync();
+            foreach (var item in conversations)
+            {
+                if (item.UserId != user!.Id)
+                {
+                    var userMain = await _userManager.GetUserWithId(item.UserId);
+                    if (userMain is not null)
+                    {
+                        return userMain.Id;
+                    }
+                    return null;
+                }
+            }
+            return null;
+        }
     }
 }

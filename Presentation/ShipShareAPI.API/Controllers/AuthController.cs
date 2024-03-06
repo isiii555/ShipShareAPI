@@ -47,7 +47,9 @@ namespace ShipShareAPI.API.Controllers
             if (user is not null)
             {
                 var token = await _signInManager.SignInAsync(user, signInRequest.Password);
-                return Ok(token);
+                
+                return token is not null ? Ok(token) : BadRequest("Password is wrong");
+
             }
             return BadRequest("Email is wrong!");
         }

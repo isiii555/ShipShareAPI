@@ -13,5 +13,7 @@ namespace ShipShareAPI.Application.Interfaces.Repositories
         Task<ConversationDto> CreateConversation(Guid recipientId);
         Task<bool> DeleteConversation(Guid conversationId);
         Task<List<Conversation>> GetAllConversations();
+        Task<string?> GetNameWithConversationId(Guid conversationId);
+        Task<Guid?> GetRecipientId(Guid conversationId);
     }
 }

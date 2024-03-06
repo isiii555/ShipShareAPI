@@ -1,6 +1,7 @@
 using Serilog;
 using ShipShareAPI.API.Extensions;
 using ShipShareAPI.API.Hubs;
+using ShipShareAPI.API.Middlewares;
 using ShipShareAPI.Application;
 using ShipShareAPI.Infrastructure;
 using ShipShareAPI.Infrastructure.Options;
@@ -12,7 +13,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
-builder.Services.AddSignalR();
 builder.AddSerilog();
 builder.Services.AddCorsExtension();
 builder.Services.AddEndpointsApiExplorer();
@@ -26,7 +26,7 @@ builder.Services.AddInfrastructureServices();
 builder.Services.AddPersistenceServices();
 builder.Services.AddJwtAuth(builder.Configuration);
 builder.Services.AddJwtAuthSwagger();
-
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -44,11 +44,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseAddUsernameToContextMiddleware();
-app.MapHub<ChatHub>("chat-hub");
+app.MapHub<ChatHub>("chat");
 app.MapControllers();
 
 app.Run();

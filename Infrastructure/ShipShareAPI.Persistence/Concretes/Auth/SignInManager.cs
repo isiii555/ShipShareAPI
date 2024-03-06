@@ -75,7 +75,7 @@ namespace ShipShareAPI.Persistence.Concretes.Auth
                     return token;
                 }
                 else
-                    throw new Exception("Password is wrong!");
+                    return null;
             }
             throw new Exception("Sign in operation failed!");
         }

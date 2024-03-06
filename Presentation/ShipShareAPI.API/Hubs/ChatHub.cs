@@ -1,4 +1,5 @@
 ﻿using Ardalis.GuardClauses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using ShipShareAPI.Application.Dto.Message;
 using ShipShareAPI.Application.Interfaces.Auth;
@@ -8,29 +9,35 @@ using System.Security.Claims;
 
 namespace ShipShareAPI.API.Hubs
 {
+    [Authorize]
     public class ChatHub : Hub
     {
         private readonly IMessageRepository _messageRepository;
         private readonly IUserManager _userManager;
-        private readonly IRequestUserProvider _requestUserProvider;
-        private readonly HttpContext? _httpContext;
+        private readonly IConversationRepository _conversationRepository;
 
-        public ChatHub(IHttpContextAccessor contextAccessor,IMessageRepository messageRepository, IUserManager userManager, IRequestUserProvider requestUserProvider)
+        public ChatHub(IMessageRepository messageRepository, IUserManager userManager, IConversationRepository conversationRepository)
         {
             _messageRepository = Guard.Against.Null(messageRepository);
             _userManager = Guard.Against.Null(userManager);
-            _requestUserProvider = Guard.Against.Null(requestUserProvider);
-            _httpContext = contextAccessor.HttpContext;
+            _conversationRepository = Guard.Against.Null(conversationRepository);
         }
         public override async Task OnConnectedAsync()
         {
-            await Console.Out.WriteLineAsync(Context.User.FindFirstValue(ClaimTypes.NameIdentifier.ToString()));
             await _userManager.UpdateConnectionId(Context.ConnectionId);
         }
-        public async Task SendMessageAsync(string conversationId,string recipientId,string text)
+        public async Task SendMessageAsync(string conversationId, string recipientId, string text)
         {
-            if (_httpContext.User.Identity!.IsAuthenticated)
+            try
             {
+                if (recipientId is null)
+                {
+                    var id = await _conversationRepository.GetRecipientId(Guid.Parse(conversationId));
+                    if (id is not null)
+                    {
+                        recipientId = id.ToString()!;
+                    }
+                }
                 var message = new SendMessageViewModel()
                 {
                     RecipientId = Guid.Parse(recipientId),
@@ -38,16 +45,22 @@ namespace ShipShareAPI.API.Hubs
                 };
                 await _messageRepository.CreateMessage(Guid.Parse(conversationId), message);
                 var user = await _userManager.GetUserWithId(Guid.Parse(recipientId));
-                await Clients.Client(user!.ConnectionId!).SendAsync("ReceiveMessage", message);
-                await Console.Out.WriteLineAsync(text);
+                if (user is not null)
+                {
+                    await Clients.Client(user!.ConnectionId!).SendAsync("ReceiveMessage",message,user.Id);
+                    await Console.Out.WriteLineAsync(text);
+                }
             }
-            throw new Exception("user not authenticated!");
+            catch (Exception ex)
+            {
+
+            };
+
         }
 
         public async Task GetId()
         {
-            var userInfo = _requestUserProvider.GetUserInfo();
-            await Clients.Caller.SendAsync("getId",userInfo!.Id.ToString());
+            await Clients.Caller.SendAsync("getId", Context.UserIdentifier);
         }
     }
 }
