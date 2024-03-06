@@ -2,6 +2,7 @@
 using Microsoft.IdentityModel.Tokens;
 using ShipShareAPI.Application.Dto.Token;
 using ShipShareAPI.Application.Interfaces.Auth;
+using ShipShareAPI.Application.Interfaces.Providers;
 using ShipShareAPI.Application.Interfaces.Token;
 using ShipShareAPI.Domain.Entities;
 using ShipShareAPI.Persistence.Context;
@@ -16,16 +17,19 @@ namespace ShipShareAPI.Persistence.Concretes.Auth
     {
         private readonly IUserManager _userManager;
         private readonly ITokenHandler _tokenHandler;
+        private readonly IRequestUserProvider _requestUserProvider;
 
-        public SignInManager(IUserManager userManager, ITokenHandler tokenHandler, ShipShareDbContext dbContext)
+        public SignInManager(IUserManager userManager, ITokenHandler tokenHandler, ShipShareDbContext dbContext, IRequestUserProvider requestUserProvider)
         {
             _userManager = Guard.Against.Null(userManager);
             _tokenHandler = Guard.Against.Null(tokenHandler);
+            _requestUserProvider = Guard.Against.Null(requestUserProvider);
         }
 
-        public async Task<TokenDto> RefreshTokenSignInAsync(string refreshToken)
+        public async Task<TokenDto> RefreshTokenSignInAsync()
         {
-            var user = await _userManager.GetUserWithRefreshToken(refreshToken);
+            var userInfo = _requestUserProvider.GetUserInfo();
+            var user = await _userManager.GetUserWithId(userInfo!.Id);
             if (user is not null && user.RefreshTokenExpireDate > DateTime.UtcNow)
             {
                 List<string> roles = new();

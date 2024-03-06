@@ -11,7 +11,7 @@ namespace ShipShareAPI.Application.Interfaces.Auth
     public interface ISignInManager
     {
         Task<Dto.Token.TokenDto> SignInAsync(User user,string password);
-        Task<Dto.Token.TokenDto> RefreshTokenSignInAsync(string refreshToken);
+        Task<Dto.Token.TokenDto> RefreshTokenSignInAsync();
 
     }
 }
