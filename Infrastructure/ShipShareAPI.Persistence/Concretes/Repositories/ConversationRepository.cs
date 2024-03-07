@@ -121,5 +121,13 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
             }
             return null;
         }
+
+        public async Task<List<Message>> GetMessagesConversationId(Guid conversationId)
+        {
+            var user = _requestUserProvider?.GetUserInfo();
+            var conversation = await _shipShareDbContext.Conversations.Include(c => c.Messages).FirstOrDefaultAsync(cu => cu.Id == conversationId);
+           
+            return conversation is not null ? conversation.Messages : null;
+        }
     }
 }

@@ -54,7 +54,7 @@ namespace ShipShareAPI.API.Controllers
             return BadRequest("Email is wrong!");
         }
 
-        [HttpPost]
+        [HttpPost("refreshTokenSignIn")]
         public async Task<ActionResult<TokenDto>> RefreshTokenSignAsync()
         {
             return Ok(await _signInManager.RefreshTokenSignInAsync());

@@ -3,9 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using ShipShareAPI.Application.Dto.Message;
 using ShipShareAPI.Application.Interfaces.Auth;
-using ShipShareAPI.Application.Interfaces.Providers;
 using ShipShareAPI.Application.Interfaces.Repositories;
-using System.Security.Claims;
 
 namespace ShipShareAPI.API.Hubs
 {
@@ -28,34 +26,27 @@ namespace ShipShareAPI.API.Hubs
         }
         public async Task SendMessageAsync(string conversationId, string recipientId, string text)
         {
-            try
+
+            if (recipientId is null)
             {
-                if (recipientId is null)
+                var id = await _conversationRepository.GetRecipientId(Guid.Parse(conversationId));
+                if (id is not null)
                 {
-                    var id = await _conversationRepository.GetRecipientId(Guid.Parse(conversationId));
-                    if (id is not null)
-                    {
-                        recipientId = id.ToString()!;
-                    }
-                }
-                var message = new SendMessageViewModel()
-                {
-                    RecipientId = Guid.Parse(recipientId),
-                    Text = text,
-                };
-                await _messageRepository.CreateMessage(Guid.Parse(conversationId), message);
-                var user = await _userManager.GetUserWithId(Guid.Parse(recipientId));
-                if (user is not null)
-                {
-                    await Clients.Client(user!.ConnectionId!).SendAsync("ReceiveMessage",message,user.Id);
-                    await Console.Out.WriteLineAsync(text);
+                    recipientId = id.ToString()!;
                 }
             }
-            catch (Exception ex)
+            var message = new SendMessageViewModel()
             {
-
+                RecipientId = Guid.Parse(recipientId),
+                Text = text,
             };
-
+            await _messageRepository.CreateMessage(Guid.Parse(conversationId), message);
+            var user = await _userManager.GetUserWithId(Guid.Parse(recipientId));
+            if (user is not null)
+            {
+                await Clients.Client(user!.ConnectionId!).SendAsync("ReceiveMessage",message,conversationId);
+                await Console.Out.WriteLineAsync(text);
+            }
         }
 
         public async Task GetId()
