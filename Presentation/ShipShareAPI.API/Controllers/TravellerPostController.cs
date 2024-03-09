@@ -38,7 +38,7 @@ namespace ShipShareAPI.API.Controllers
 
         [HttpPut("updateTravellerPost/{postId}")]
         [Authorize(Roles = "User")]
-        public async Task<ActionResult<TravellerPostDto>> UpdateTravellerPost(Guid postId, UpdateTravellerPostRequest updateTravellerPostRequest)
+        public async Task<ActionResult<TravellerPostDto>> UpdateTravellerPost(Guid postId,[FromForm] UpdateTravellerPostRequest updateTravellerPostRequest)
         {
             var post = await _travellerPostsRepository.UpdatePost(postId, updateTravellerPostRequest);
             if (post is not null)
