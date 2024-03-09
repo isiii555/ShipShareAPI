@@ -16,5 +16,6 @@ namespace ShipShareAPI.Application.Interfaces.Repositories
         Task<string?> GetNameWithConversationId(Guid conversationId);
         Task<Guid?> GetRecipientId(Guid conversationId);
         Task<List<Message>> GetMessagesConversationId(Guid conversationId);
+        Task<ConversationNameIdDto> GetConversationId(Guid recipientId);
     }
 }

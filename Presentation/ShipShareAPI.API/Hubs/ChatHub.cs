@@ -23,6 +23,12 @@ namespace ShipShareAPI.API.Hubs
         public override async Task OnConnectedAsync()
         {
             await _userManager.UpdateConnectionId(Context.ConnectionId);
+            await Clients.Caller.SendAsync("setIsConnected", "true");
+        }
+
+        public override async Task OnDisconnectedAsync(Exception? exception)
+        {
+            await Clients.Caller.SendAsync("setIsConnected", "false");
         }
         public async Task SendMessageAsync(string conversationId, string recipientId, string text)
         {

@@ -129,5 +129,24 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
            
             return conversation is not null ? conversation.Messages : null;
         }
+
+        public async Task<ConversationNameIdDto> GetConversationId(Guid recipientId)
+        {
+            var user = _requestUserProvider.GetUserInfo();
+            var recipientUser = await _userManager.GetUserWithId(recipientId);
+            var conversations = await _shipShareDbContext.ConversationUser
+                        .Where(cu => cu.UserId == user!.Id || cu.UserId == recipientId)
+                        .GroupBy(cu => cu.ConversationId)
+                        .Where(g => g.Count() == 2)
+                        .Select(g => g.Key)
+                        .ToListAsync();
+            var conversationNameIdDto = new ConversationNameIdDto()
+            {
+                Id = conversations[0],
+                Name = recipientUser!.Username,
+            };
+            return conversationNameIdDto;
+        }
+
     }
 }

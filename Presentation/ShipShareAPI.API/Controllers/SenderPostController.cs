@@ -27,7 +27,7 @@ namespace ShipShareAPI.API.Controllers
 
         [HttpPost("createSenderPost")]
         [Authorize(Roles = "User")]
-        public async Task<IActionResult> CreateSenderPost(CreateSenderPostRequest createSenderPostRequest)
+        public async Task<IActionResult> CreateSenderPost([FromForm]CreateSenderPostRequest createSenderPostRequest)
         {
             var post = await _senderPostsRepository.CreatePost(createSenderPostRequest);
             return Ok(post);
@@ -35,7 +35,7 @@ namespace ShipShareAPI.API.Controllers
 
         [HttpPut("updateSenderPost/{postId}")]
         [Authorize(Roles = "User")]
-        public async Task<IActionResult> UpdateSenderPost(Guid postId,UpdateSenderPostRequest updateSenderPostRequest)
+        public async Task<IActionResult> UpdateSenderPost(Guid postId,[FromForm]UpdateSenderPostRequest updateSenderPostRequest)
         {
             var result = await _senderPostsRepository.UpdatePost(postId, updateSenderPostRequest);
             if (result is not null) 
