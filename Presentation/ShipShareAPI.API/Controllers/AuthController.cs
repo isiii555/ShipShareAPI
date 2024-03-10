@@ -60,11 +60,11 @@ namespace ShipShareAPI.API.Controllers
             return Ok(await _signInManager.RefreshTokenSignInAsync());
         }
 
-        [HttpGet("getUsernameWithId")]
-        public async Task<string> GetUsernameWithId(Guid userId)
+        [HttpGet("getUserDetailsWithId")]
+        public async Task<ActionResult<User>> GetUsernameWithId(Guid userId)
         {
             var user = await _userManager.GetUserWithId(userId);
-            return user is not null ? user.Username : string.Empty;
+            return user is not null ? Ok(user) : BadRequest("User not found");
         }
     }
 }
