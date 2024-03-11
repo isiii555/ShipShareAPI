@@ -60,7 +60,7 @@ namespace ShipShareAPI.API.Controllers
             return Ok(await _signInManager.RefreshTokenSignInAsync());
         }
 
-        [HttpGet("getUserDetailsWithId")]
+        [HttpGet("getUserDetailsWithId/{userId}")]
         public async Task<ActionResult<User>> GetUsernameWithId(Guid userId)
         {
             var user = await _userManager.GetUserWithId(userId);
@@ -68,3 +68,4 @@ namespace ShipShareAPI.API.Controllers
         }
     }
 }
+    
