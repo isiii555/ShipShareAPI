@@ -84,6 +84,8 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
             var review = await _shipShareDbContext.Reviews.FirstOrDefaultAsync(r => r.Id == reviewId);
             if (review is not null)
             {
+                if (!status)
+                    review.IsDeclined = true;
                 review.IsConfirmed = status;
                 _shipShareDbContext.Reviews.Update(review);
                 await _shipShareDbContext.SaveChangesAsync();

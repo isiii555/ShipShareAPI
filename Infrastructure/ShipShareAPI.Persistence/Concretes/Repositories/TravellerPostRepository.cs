@@ -96,6 +96,8 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
             var post = await _shipShareDbContext.TravellerPosts.FirstOrDefaultAsync(s => s.Id == postId);
             if (post is not null)
             {
+                if (!status)
+                    post.IsDeclined = true;
                 post.IsConfirmed = status;
                 _shipShareDbContext.TravellerPosts.Update(post);
                 await _shipShareDbContext.SaveChangesAsync();

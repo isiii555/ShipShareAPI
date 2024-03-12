@@ -55,7 +55,7 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
 
         public async Task<bool> DeletePost(Guid postId)
         {
-            var user = _requestUserProvider?.GetUserInfo();   
+            var user = _requestUserProvider?.GetUserInfo();
             var post = await _shipShareDbContext.SenderPosts.FirstOrDefaultAsync(p => p.Id == postId);
             if (post is not null)
             {
@@ -94,6 +94,8 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
             var post = await _shipShareDbContext.SenderPosts.FirstOrDefaultAsync(s => s.Id == postId);
             if (post is not null)
             {
+                if (!status)
+                    post.IsDeclined = true;
                 post.IsConfirmed = status;
                 _shipShareDbContext.SenderPosts.Update(post);
                 await _shipShareDbContext.SaveChangesAsync();
@@ -106,7 +108,7 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
         {
             var user = _requestUserProvider?.GetUserInfo();
             var post = _shipShareDbContext.SenderPosts.FirstOrDefault(p => p.Id == postId);
-          
+
             if (post is not null)
             {
                 if (post.UserId == user!.Id || user.Role == "Admin")

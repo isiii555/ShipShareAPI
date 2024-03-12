@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using ShipShareAPI.Application.Interfaces.Repositories;
 using ShipShareAPI.Domain.Entities;
 
-
 namespace ShipShareAPI.API.Controllers
 {
     [Route("api/[controller]")]

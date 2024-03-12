@@ -16,6 +16,7 @@ namespace ShipShareAPI.Domain.Entities
         public Post? Post { get; set; }
         public User? ReviewSender { get; set; }
         public bool IsConfirmed {  get; set; }
+        public bool IsDeclined { get; set; }
 
     }
 }
