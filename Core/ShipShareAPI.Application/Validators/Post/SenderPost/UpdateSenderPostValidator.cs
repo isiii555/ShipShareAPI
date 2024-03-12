@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ShipShareAPI.Application.Validators.Post
+namespace ShipShareAPI.Application.Validators.Post.SenderPost
 {
     public class UpdateSenderPostValidator : AbstractValidator<UpdateSenderPostRequest>
     {

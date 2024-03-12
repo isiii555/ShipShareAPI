@@ -6,11 +6,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ShipShareAPI.Application.Validators.Post
+namespace ShipShareAPI.Application.Validators.Post.SenderPost
 {
     public class CreateSenderPostValidator : AbstractValidator<CreateSenderPostRequest>
     {
-        public CreateSenderPostValidator() {
+        public CreateSenderPostValidator()
+        {
             RuleFor(p => p.Title).NotNull().WithMessage("Title field must be filled!");
             RuleFor(p => p.ItemWeight).GreaterThan(0).NotEmpty().WithMessage("Item weight field must be filled!");
             RuleFor(p => p.ItemType).NotNull().WithMessage("Item type field must be filled!");

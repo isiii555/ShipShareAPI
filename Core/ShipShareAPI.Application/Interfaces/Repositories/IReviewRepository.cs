@@ -1,17 +1,15 @@
 ﻿using ShipShareAPI.Application.Dto.Review;
 using ShipShareAPI.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace ShipShareAPI.Application.Interfaces.Repositories
 {
     public interface IReviewRepository
     {
         Task<List<Review>> GetAllReviews();
+        Task<List<Review>> GetAllReviewsAdmin();
         Task<ReviewDto> UpdateReview(Guid reviewId, UpdateReviewRequest updateReviewRequest);
+        Task<bool> SetStatusReview(Guid reviewId, bool status);
         Task<ReviewDto> CreateReview(Guid postId,CreateReviewRequest createReviewRequest);
         Task<List<Review>> GetPostReviews(Guid postId);
         Task<bool> DeleteReview(Guid reviewId);

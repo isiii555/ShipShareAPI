@@ -49,25 +49,47 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
         public async Task<bool> DeleteReview(Guid reviewId)
         {
             var user = _requestUserProvider.GetUserInfo();
-            var review = await _shipShareDbContext.Reviews.FirstOrDefaultAsync(r => r.Id == reviewId);
+            var review = await _shipShareDbContext.Reviews.Include(r => r.Post).FirstOrDefaultAsync(r => r.Id == reviewId);
             if (review is not null)
             {
-                _shipShareDbContext.Reviews.Remove(review);
-                await _shipShareDbContext.SaveChangesAsync();
-                _logger.LogInformation($"{user!.Id} deleted review {review.Id}");
-                return true;
+                if (review.SenderId == user!.Id || review.Post!.UserId == user!.Id || user!.Role == "Admin")
+                {
+                    _shipShareDbContext.Reviews.Remove(review);
+                    await _shipShareDbContext.SaveChangesAsync();
+                    _logger.LogInformation($"{user!.Id} deleted review {review.Id}");
+                    return true;
+                }
+                return false;
             }
             return false;
         }
 
         public async Task<List<Review>> GetAllReviews()
         {
+            return await _shipShareDbContext.Reviews.Where(p => p.IsConfirmed).ToListAsync();
+        }
+
+        public async Task<List<Review>> GetAllReviewsAdmin()
+        {
             return await _shipShareDbContext.Reviews.ToListAsync();
         }
 
         public async Task<List<Review>> GetPostReviews(Guid postId)
         {
-            return await _shipShareDbContext.Reviews.Where(r => r.PostId == postId).ToListAsync();
+            return await _shipShareDbContext.Reviews.Where(r => r.PostId == postId && r.IsConfirmed).ToListAsync();
+        }
+
+        public async Task<bool> SetStatusReview(Guid reviewId, bool status)
+        {
+            var review = await _shipShareDbContext.Reviews.FirstOrDefaultAsync(r => r.Id == reviewId);
+            if (review is not null)
+            {
+                review.IsConfirmed = status;
+                _shipShareDbContext.Reviews.Update(review);
+                await _shipShareDbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
         }
 
         public async Task<ReviewDto> UpdateReview(Guid reviewId, UpdateReviewRequest updateReviewRequest)
@@ -76,7 +98,7 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
             var review = await _shipShareDbContext.Reviews.Include(r => r.Post).ThenInclude(p => p!.User).FirstOrDefaultAsync(r => r.Id == reviewId);
             if (review is not null)
             {
-                if (review.SenderId == user!.Id || review.Post!.UserId == user.Id || user.Role == "Admin")
+                if (review.SenderId == user!.Id || user.Role == "Admin")
                 {
                     review.Text = updateReviewRequest.Text;
                     review.Rating = updateReviewRequest.Rating;

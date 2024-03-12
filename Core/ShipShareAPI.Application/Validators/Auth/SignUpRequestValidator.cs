@@ -13,7 +13,7 @@ namespace ShipShareAPI.Application.Validators.Auth
         public SignUpRequestValidator() {
             RuleFor(s => s.Email).EmailAddress().WithMessage("Email must be entered here.").NotNull().NotEmpty().WithMessage("Email field must be filled.");
             RuleFor(s => s.Password).NotNull().NotEmpty().WithMessage("Password field must be filled.");
-            RuleFor(s => s.UserName).MinimumLength(5).NotNull().NotEmpty().WithMessage("Email field must be filled.");
+            RuleFor(s => s.UserName).MinimumLength(5).WithMessage("Username must contain at least 5 characters.").NotNull().NotEmpty().WithMessage("Email field must be filled.");
         }
     }
 }

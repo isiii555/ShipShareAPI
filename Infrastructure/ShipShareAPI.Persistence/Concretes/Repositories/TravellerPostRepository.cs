@@ -36,11 +36,11 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
 
         public async Task<bool> DeletePost(Guid postId)
         {
-            var userId = _requestUserProvider?.GetUserInfo()!.Id;
+            var user = _requestUserProvider?.GetUserInfo();
             var post = await _shipShareDbContext.TravellerPosts.FirstOrDefaultAsync(p => p.Id == postId);
             if (post is not null)
             {
-                if (userId == post.UserId)
+                if (user!.Id == post.UserId || user.Role == "Admin")
                 {
                     _shipShareDbContext.TravellerPosts.Remove(post);
                     await _shipShareDbContext.SaveChangesAsync();
@@ -56,23 +56,23 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
 
         public async Task<List<TravellerPost>> GetAllPosts()
         {
-            return await _shipShareDbContext.TravellerPosts.ToListAsync();
+            return await _shipShareDbContext.TravellerPosts.Where(p => p.IsConfirmed).ToListAsync();
         }
 
         public async Task<List<TravellerPost>> GetUserTravellerPosts()
         {
             var userId = _requestUserProvider.GetUserInfo()!.Id;
-            return await _shipShareDbContext.TravellerPosts.Where(t => t.UserId ==  userId).ToListAsync();
+            return await _shipShareDbContext.TravellerPosts.Where(t => t.UserId == userId && t.IsConfirmed).ToListAsync();
         }
 
         public async Task<TravellerPostDto?> UpdatePost(Guid postId, UpdateTravellerPostRequest updateTravellerPostRequest)
         {
-            var userId = _requestUserProvider?.GetUserInfo()!.Id;
+            var user = _requestUserProvider?.GetUserInfo();
             var post = _shipShareDbContext.TravellerPosts.FirstOrDefault(p => p.Id == postId);
 
             if (post is not null)
             {
-                if (post.UserId == userId)
+                if (post.UserId == user!.Id || user.Role == "Admin")
                 {
                     post.StartDestination = updateTravellerPostRequest.StartDestination;
                     post.DeadlineDate = updateTravellerPostRequest.DeadlineDate;
@@ -89,6 +89,24 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
                 throw new Exception("Error 404 not found!");
             }
             throw new Exception("Error 404 not found!");
+        }
+
+        public async Task<bool> SetStatusTravellerPost(Guid postId, bool status)
+        {
+            var post = await _shipShareDbContext.TravellerPosts.FirstOrDefaultAsync(s => s.Id == postId);
+            if (post is not null)
+            {
+                post.IsConfirmed = status;
+                _shipShareDbContext.TravellerPosts.Update(post);
+                await _shipShareDbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<List<TravellerPost>> GetAllPostsAdmin()
+        {
+            return await _shipShareDbContext.TravellerPosts.ToListAsync();
         }
     }
 }

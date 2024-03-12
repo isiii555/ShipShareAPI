@@ -55,11 +55,11 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
 
         public async Task<bool> DeletePost(Guid postId)
         {
-            var userId = _requestUserProvider?.GetUserInfo()!.Id;   
+            var user = _requestUserProvider?.GetUserInfo();   
             var post = await _shipShareDbContext.SenderPosts.FirstOrDefaultAsync(p => p.Id == postId);
             if (post is not null)
             {
-                if (userId == post.UserId)
+                if (user!.Id == post.UserId || user.Role == "Admin")
                 {
                     _shipShareDbContext.SenderPosts.Remove(post);
                     await _shipShareDbContext.SaveChangesAsync();
@@ -75,23 +75,41 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
 
         public async Task<List<SenderPost>> GetAllPosts()
         {
+            return await _shipShareDbContext.SenderPosts.Where(p => p.IsConfirmed).ToListAsync();
+        }
+
+        public async Task<List<SenderPost>> GetAllPostsAdmin()
+        {
             return await _shipShareDbContext.SenderPosts.ToListAsync();
         }
 
         public async Task<List<SenderPost>> GetUserSenderPosts()
         {
             var userId = _requestUserProvider?.GetUserInfo()!.Id;
-            return await _shipShareDbContext.SenderPosts.Where(s => s.UserId == userId).ToListAsync();
+            return await _shipShareDbContext.SenderPosts.Where(s => s.UserId == userId && s.IsConfirmed).ToListAsync();
+        }
+
+        public async Task<bool> SetStatusSenderPost(Guid postId, bool status)
+        {
+            var post = await _shipShareDbContext.SenderPosts.FirstOrDefaultAsync(s => s.Id == postId);
+            if (post is not null)
+            {
+                post.IsConfirmed = status;
+                _shipShareDbContext.SenderPosts.Update(post);
+                await _shipShareDbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
         }
 
         public async Task<SenderPostDto?> UpdatePost(Guid postId, UpdateSenderPostRequest updateSenderPostRequest)
         {
-            var userId = _requestUserProvider?.GetUserInfo()!.Id;
+            var user = _requestUserProvider?.GetUserInfo();
             var post = _shipShareDbContext.SenderPosts.FirstOrDefault(p => p.Id == postId);
           
             if (post is not null)
             {
-                if (post.UserId == userId)
+                if (post.UserId == user!.Id || user.Role == "Admin")
                 {
                     post.StartDestination = updateSenderPostRequest.StartDestination;
                     post.DeadlineDate = updateSenderPostRequest.DeadlineDate;
