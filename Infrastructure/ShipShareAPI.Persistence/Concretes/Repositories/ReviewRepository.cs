@@ -66,12 +66,13 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
 
         public async Task<List<Review>> GetAllReviews()
         {
-            return await _shipShareDbContext.Reviews.Where(p => p.IsConfirmed).ToListAsync();
+            //return await _shipShareDbContext.Reviews.Where(p => p.IsConfirmed).ToListAsync();
+            return await _shipShareDbContext.Reviews.ToListAsync();
         }
 
         public async Task<List<Review>> GetAllReviewsAdmin()
         {
-            return await _shipShareDbContext.Reviews.ToListAsync();
+            return await _shipShareDbContext.Reviews.Where(p => p.IsDeclined == false).ToListAsync();
         }
 
         public async Task<List<Review>> GetPostReviews(Guid postId)

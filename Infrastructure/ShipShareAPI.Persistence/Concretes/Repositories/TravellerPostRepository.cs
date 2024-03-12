@@ -56,7 +56,8 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
 
         public async Task<List<TravellerPost>> GetAllPosts()
         {
-            return await _shipShareDbContext.TravellerPosts.Where(p => p.IsConfirmed).ToListAsync();
+            return await _shipShareDbContext.TravellerPosts.ToListAsync();
+            //return await _shipShareDbContext.TravellerPosts.Where(p => p.IsConfirmed).ToListAsync();
         }
 
         public async Task<List<TravellerPost>> GetUserTravellerPosts()
@@ -108,7 +109,7 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
 
         public async Task<List<TravellerPost>> GetAllPostsAdmin()
         {
-            return await _shipShareDbContext.TravellerPosts.ToListAsync();
+            return await _shipShareDbContext.TravellerPosts.Where(p => p.IsDeclined == false).ToListAsync();
         }
     }
 }
