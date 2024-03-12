@@ -13,6 +13,7 @@ namespace ShipShareAPI.Application.Interfaces.Repositories
         Task<List<Review>> GetAllReviews();
         Task<ReviewDto> UpdateReview(Guid reviewId, UpdateReviewRequest updateReviewRequest);
         Task<ReviewDto> CreateReview(Guid postId,CreateReviewRequest createReviewRequest);
+        Task<List<Review>> GetPostReviews(Guid postId);
         Task<bool> DeleteReview(Guid reviewId);
     }
 }

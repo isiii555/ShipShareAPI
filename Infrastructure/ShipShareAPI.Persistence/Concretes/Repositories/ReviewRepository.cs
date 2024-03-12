@@ -65,6 +65,11 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
             return await _shipShareDbContext.Reviews.ToListAsync();
         }
 
+        public async Task<List<Review>> GetPostReviews(Guid postId)
+        {
+            return await _shipShareDbContext.Reviews.Where(r => r.PostId == postId).ToListAsync();
+        }
+
         public async Task<ReviewDto> UpdateReview(Guid reviewId, UpdateReviewRequest updateReviewRequest)
         {
             var user = _requestUserProvider.GetUserInfo();
@@ -84,5 +89,6 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
             }
             throw new Exception("404 not found");
         }
+
     }
 }
