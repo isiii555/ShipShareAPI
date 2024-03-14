@@ -18,11 +18,11 @@ namespace ShipShareAPI.API.Controllers
             _reviewRepository = Guard.Against.Null(reviewRepository);
         }
 
-        [HttpPost("createReview/{postId}")]
+        [HttpPost("createReview/{userId}")]
         [Authorize(Roles = "User")]
-        public async Task<ActionResult<ReviewDto>> CreateReview(Guid postId,CreateReviewRequest createReviewRequest)
+        public async Task<ActionResult<ReviewDto>> CreateReview(Guid userId,CreateReviewRequest createReviewRequest)
         {
-            var review = await _reviewRepository.CreateReview(postId, createReviewRequest);
+            var review = await _reviewRepository.CreateReview(userId, createReviewRequest);
             if (review is not null)
                 return Ok(review);
             else
@@ -56,11 +56,11 @@ namespace ShipShareAPI.API.Controllers
             return Ok(result);
         }
 
-        [HttpGet("getPostReviews/{postId}")]
+        [HttpGet("getPostReviews/{userId}")]
         [AllowAnonymous]
-        public async Task<ActionResult<bool>> GetPostReviews(Guid postId)
+        public async Task<ActionResult<bool>> GetPostReviews(Guid userId)
         {
-            var result = await _reviewRepository.GetPostReviews(postId);
+            var result = await _reviewRepository.GetUserReviews(userId);
             return Ok(result);
         }
     }

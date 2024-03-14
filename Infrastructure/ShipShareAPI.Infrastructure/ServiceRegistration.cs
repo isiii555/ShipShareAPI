@@ -1,13 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 using ShipShareAPI.Application.Interfaces.Providers;
+using ShipShareAPI.Application.Interfaces.Services;
 using ShipShareAPI.Application.Interfaces.Token;
 using ShipShareAPI.Infrastructure.Providers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ShipShareAPI.Infrastructure.Services.Mail;
+
 
 namespace ShipShareAPI.Infrastructure
 {
@@ -17,6 +14,7 @@ namespace ShipShareAPI.Infrastructure
         {
             services.AddScoped<ITokenHandler,Services.Token.TokenHandler>();
             services.AddScoped<IRequestUserProvider, RequestUserProvider>();
+            services.AddScoped<IMailService,MailService>();
             return services;
         }
     }

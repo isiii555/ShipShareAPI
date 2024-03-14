@@ -26,6 +26,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext(builder.Configuration);
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Token"));
 builder.Services.Configure<AzureOptions>(builder.Configuration.GetSection("Azure"));
+builder.Services.Configure<MailOptions>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices();
 builder.Services.AddPersistenceServices();
@@ -54,7 +55,6 @@ app.UseAuthorization();
 app.UseAddUsernameToContextMiddleware();
 app.MapHub<ChatHub>("chat");
 app.MapControllers();
-
-//app.Initialize();
+app.Initialize();
 
 app.Run();

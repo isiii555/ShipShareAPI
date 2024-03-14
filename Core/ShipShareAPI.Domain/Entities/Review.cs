@@ -9,12 +9,12 @@ namespace ShipShareAPI.Domain.Entities
 {
     public class Review : BaseEntity
     {
-        public Guid SenderId { get; set; }
+        public Guid ReviewSenderId { get; set; }
+        public Guid ReviewRecipientId { get; set; }
         public int Rating { get; set; }
-        public Guid PostId { get; set; }
         public string? Text { get; set; }
-        public Post? Post { get; set; }
         public User? ReviewSender { get; set; }
+        public User? ReviewRecipient { get; set; }
         public bool IsConfirmed {  get; set; }
         public bool IsDeclined { get; set; }
 

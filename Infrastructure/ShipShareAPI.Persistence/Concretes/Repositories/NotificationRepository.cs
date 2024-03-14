@@ -53,7 +53,8 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
 
         public async Task<List<Notification>> GetAllNotifications()
         {
-            return await _shipShareDbContext.Notifications.ToListAsync();
+            var user = _requestUserProvider.GetUserInfo();
+            return await _shipShareDbContext.Notifications.Where(n => n.UserId == user!.Id).ToListAsync();
         }
 
         public async Task<bool> UpdateNotification(Guid notificationId)

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ShipShareAPI.Persistence.Context;
 
@@ -11,9 +12,11 @@ using ShipShareAPI.Persistence.Context;
 namespace ShipShareAPI.Persistence.Migrations
 {
     [DbContext(typeof(ShipShareDbContext))]
-    partial class ShipShareDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240314221620_mig24")]
+    partial class mig24
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,7 +39,7 @@ namespace ShipShareAPI.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Conversations", (string)null);
+                    b.ToTable("Conversations");
                 });
 
             modelBuilder.Entity("ShipShareAPI.Domain.Entities.ConversationUser", b =>
@@ -63,7 +66,7 @@ namespace ShipShareAPI.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ConversationUser", (string)null);
+                    b.ToTable("ConversationUser");
                 });
 
             modelBuilder.Entity("ShipShareAPI.Domain.Entities.Message", b =>
@@ -100,7 +103,7 @@ namespace ShipShareAPI.Persistence.Migrations
 
                     b.HasIndex("SenderId");
 
-                    b.ToTable("Messages", (string)null);
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("ShipShareAPI.Domain.Entities.Notification", b =>
@@ -133,7 +136,7 @@ namespace ShipShareAPI.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Notifications", (string)null);
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("ShipShareAPI.Domain.Entities.Review", b =>
@@ -172,7 +175,7 @@ namespace ShipShareAPI.Persistence.Migrations
 
                     b.HasIndex("ReviewSenderId");
 
-                    b.ToTable("Reviews", (string)null);
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("ShipShareAPI.Domain.Entities.Role", b =>
@@ -193,7 +196,7 @@ namespace ShipShareAPI.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles", (string)null);
+                    b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("ShipShareAPI.Domain.Entities.RoleUser", b =>
@@ -220,7 +223,7 @@ namespace ShipShareAPI.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RoleUser", (string)null);
+                    b.ToTable("RoleUser");
                 });
 
             modelBuilder.Entity("ShipShareAPI.Domain.Entities.SenderPost", b =>
@@ -283,7 +286,7 @@ namespace ShipShareAPI.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("SenderPosts", (string)null);
+                    b.ToTable("SenderPosts");
                 });
 
             modelBuilder.Entity("ShipShareAPI.Domain.Entities.TravellerPost", b =>
@@ -336,7 +339,7 @@ namespace ShipShareAPI.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("TravellerPosts", (string)null);
+                    b.ToTable("TravellerPosts");
                 });
 
             modelBuilder.Entity("ShipShareAPI.Domain.Entities.User", b =>
@@ -405,7 +408,7 @@ namespace ShipShareAPI.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("ShipShareAPI.Domain.Entities.ConversationUser", b =>

@@ -11,7 +11,7 @@ namespace ShipShareAPI.Application.Interfaces.Repositories
         Task<ReviewDto> UpdateReview(Guid reviewId, UpdateReviewRequest updateReviewRequest);
         Task<bool> SetStatusReview(Guid reviewId, bool status);
         Task<ReviewDto> CreateReview(Guid postId,CreateReviewRequest createReviewRequest);
-        Task<List<Review>> GetPostReviews(Guid postId);
+        Task<List<Review>> GetUserReviews(Guid userId);
         Task<bool> DeleteReview(Guid reviewId);
     }
 }

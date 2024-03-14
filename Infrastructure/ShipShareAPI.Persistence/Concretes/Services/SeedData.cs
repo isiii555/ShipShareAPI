@@ -1,16 +1,14 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ShipShareAPI.Application.Interfaces.Auth;
 using ShipShareAPI.Domain.Entities;
 using ShipShareAPI.Persistence.Context;
 using ShipShareAPI.Persistence.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace ShipShareAPI.Persistence.Concretes.Services
 {
@@ -18,7 +16,9 @@ namespace ShipShareAPI.Persistence.Concretes.Services
     {
         public async static void Initialize(this WebApplication app)
         {
-            var container = app.Services.CreateScope();
+            using var container = app.Services.CreateScope();
+
+            var configuration = container.ServiceProvider.GetRequiredService<IConfiguration>();
 
             var userManager = container.ServiceProvider.GetRequiredService<IUserManager>();
 
@@ -29,12 +29,13 @@ namespace ShipShareAPI.Persistence.Concretes.Services
             var user = await userManager.FindByEmailAsync("admin@admin.com");
             if (user is null)
             {
-                PasswordHashHelper.CreatePassword("admin", out byte[] salt, out byte[] passwordHash);
+                PasswordHashHelper.CreatePassword(configuration["DefaultAdmin:Password"]!, out byte[] salt, out byte[] passwordHash);
                 var role = await roleManager.GetRoleByName("admin");
+                var role2 = await roleManager.GetRoleByName("user");
                 user = new User
                 {
-                    Username = "Admin",
-                    Email = "admin@admin.com",
+                    Username = configuration["DefaultAdmin:Username"]!,
+                    Email = configuration["DefaultAdmin:Email"]!,
                     PasswordHash = passwordHash,
                     PasswordSalt = salt,
                 };
@@ -46,8 +47,14 @@ namespace ShipShareAPI.Persistence.Concretes.Services
                     UserId = user.Id,
                     RoleId = role!.Id
                 };
+                var userRole2 = new RoleUser()
+                {
+                    UserId = user.Id,
+                    RoleId = role2!.Id
+                };
 
                 await dbContext.RoleUser.AddAsync(userRole);
+                await dbContext.RoleUser.AddAsync(userRole2);
                 await dbContext.SaveChangesAsync();
             }
 

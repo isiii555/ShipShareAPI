@@ -1,13 +1,18 @@
 ﻿using Ardalis.GuardClauses;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using ShipShareAPI.Application.Dto.Token;
 using ShipShareAPI.Application.Interfaces.Auth;
 using ShipShareAPI.Application.Interfaces.Providers;
+using ShipShareAPI.Application.Interfaces.Services;
 using ShipShareAPI.Application.Interfaces.Token;
 using ShipShareAPI.Domain.Entities;
 using ShipShareAPI.Persistence.Context;
 using ShipShareAPI.Persistence.Helpers;
 using System.Security.Claims;
+using System.Text;
+using System.Web;
 
 namespace ShipShareAPI.Persistence.Concretes.Auth
 {
@@ -17,13 +22,34 @@ namespace ShipShareAPI.Persistence.Concretes.Auth
         private readonly IRoleManager _roleManager;
         private readonly ITokenHandler _tokenHandler;
         private readonly IRequestUserProvider _requestUserProvider;
+        private readonly IMailService _mailService;
+        private readonly IConfiguration _configuration;
 
-        public UserManager(ShipShareDbContext dbContext, IRoleManager roleManager, ITokenHandler tokenHandler, IRequestUserProvider requestUserProvider)
+        public UserManager(ShipShareDbContext dbContext, IRoleManager roleManager, ITokenHandler tokenHandler, IRequestUserProvider requestUserProvider, IMailService mailService, IConfiguration configuration)
         {
             _dbContext = Guard.Against.Null(dbContext);
             _roleManager = Guard.Against.Null(roleManager);
             _tokenHandler = Guard.Against.Null(tokenHandler);
             _requestUserProvider = Guard.Against.Null(requestUserProvider);
+            _mailService = Guard.Against.Null(mailService);
+            _configuration = Guard.Against.Null(configuration);
+        }
+
+        public async Task<bool> ConfirmEmail(Guid userId, string token)
+        {
+            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user is not null)
+            {
+                if (_tokenHandler.VerifyEmailConfirmationToken(user, token))
+                {
+                    user.IsEmailConfirmed = true;
+                    _dbContext.Users.Update(user);
+                    await _dbContext.SaveChangesAsync();
+                    return true;
+                }
+                return false;
+            }
+            return false;
         }
 
         public async Task<TokenDto> CreateAsync(User user, string password)
@@ -46,6 +72,8 @@ namespace ShipShareAPI.Persistence.Concretes.Auth
 
             await _dbContext.SaveChangesAsync();
 
+            await SendConfirmationEmail(user);
+
             var roles = (await _roleManager.GetRoleByEmail(user.Email)).ToList();
             var roleNames = new List<string>();
             roles.ForEach(r =>
@@ -59,6 +87,7 @@ namespace ShipShareAPI.Persistence.Concretes.Auth
                     new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
                     new Claim(ClaimTypes.Role,string.Join(",",roleNames)),
                 };
+
             var token = _tokenHandler.CreateAccessToken(user, claims);
             return token;
         }
@@ -76,6 +105,19 @@ namespace ShipShareAPI.Persistence.Concretes.Auth
         public async Task<User?> GetUserWithRefreshToken(string refreshToken)
         {
             return await _dbContext.Users.Include(u => u.Roles).FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+        }
+
+        public async Task SendConfirmationEmail(User user)
+        {
+            var emailConfirmationToken = _tokenHandler.GenerateEmailConfirmationToken(user!);
+
+            string htmlContent = File.ReadAllText("EmailTemplate.html");
+
+            var callbackUrl = $"{_configuration["AppBaseUrl"]}/api/auth/confirmemail/{user.Id}/{HttpUtility.UrlEncode(emailConfirmationToken.AccessToken)}";
+
+            htmlContent = htmlContent.Replace("#link#", callbackUrl);
+
+            await _mailService.SendMessageAsync(user.Email, "Email Confirmation", htmlContent, true);
         }
 
         public async Task<User?> UpdateConnectionId(string connectionId)

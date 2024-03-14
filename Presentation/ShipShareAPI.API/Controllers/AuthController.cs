@@ -47,7 +47,7 @@ namespace ShipShareAPI.API.Controllers
             if (user is not null)
             {
                 var token = await _signInManager.SignInAsync(user, signInRequest.Password);
-                
+
                 return token is not null ? Ok(token) : BadRequest("Password is wrong");
 
             }
@@ -65,6 +65,13 @@ namespace ShipShareAPI.API.Controllers
         {
             var user = await _userManager.GetUserWithId(userId);
             return user is not null ? Ok(user) : BadRequest("User not found");
+        }
+
+        [HttpGet("confirmEmail/{userId}/{token}")]
+        public async Task<ActionResult<User>> ConfirmEmail(Guid userId, string token)
+        {
+            var result = await _userManager.ConfirmEmail(userId, token);
+            return result ? Ok(result) : BadRequest(result);
         }
     }
 }

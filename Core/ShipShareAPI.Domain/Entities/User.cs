@@ -31,6 +31,7 @@ namespace ShipShareAPI.Domain.Entities
         public List<SenderPost>? SenderPosts { get; set; }
         public IEnumerable<Conversation>? Conversations { get; set; }
         public List<Review>? GivenReviews { get; set; }
+        public List<Review>? ReceivedReviews { get; set; }
         public List<Notification>? Notifications { get; set; }
 
     }

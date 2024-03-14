@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.Extensions.DependencyInjection;
+using ShipShareAPI.Application.Interfaces.Services;
 using ShipShareAPI.Application.Validators.Auth;
 using System;
 using System.Collections.Generic;
