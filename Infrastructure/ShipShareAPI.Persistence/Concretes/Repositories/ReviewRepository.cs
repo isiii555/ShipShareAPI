@@ -77,7 +77,8 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
 
         public async Task<List<Review>> GetUserReviews(Guid userId)
         {
-            return await _shipShareDbContext.Reviews.Where(r => r.ReviewRecipientId == userId && r.IsConfirmed).ToListAsync();
+            return await _shipShareDbContext.Reviews.Where(r => r.ReviewRecipientId == userId).ToListAsync();
+            //return await _shipShareDbContext.Reviews.Where(r => r.ReviewRecipientId == userId && r.IsConfirmed).ToListAsync();
         }
 
         public async Task<bool> SetStatusReview(Guid reviewId, bool status)

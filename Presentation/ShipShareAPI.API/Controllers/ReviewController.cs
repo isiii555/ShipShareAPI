@@ -56,9 +56,9 @@ namespace ShipShareAPI.API.Controllers
             return Ok(result);
         }
 
-        [HttpGet("getPostReviews/{userId}")]
+        [HttpGet("getUserReviews/{userId}")]
         [AllowAnonymous]
-        public async Task<ActionResult<bool>> GetPostReviews(Guid userId)
+        public async Task<ActionResult<bool>> GetUserReviews(Guid userId)
         {
             var result = await _reviewRepository.GetUserReviews(userId);
             return Ok(result);
