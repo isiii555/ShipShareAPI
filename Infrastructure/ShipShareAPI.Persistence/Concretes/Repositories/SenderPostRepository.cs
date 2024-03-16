@@ -87,7 +87,8 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
         public async Task<List<SenderPost>> GetUserSenderPosts()
         {
             var userId = _requestUserProvider?.GetUserInfo()!.Id;
-            return await _shipShareDbContext.SenderPosts.Where(s => s.UserId == userId && s.IsConfirmed).ToListAsync();
+            return await _shipShareDbContext.SenderPosts.Where(s => s.UserId == userId).ToListAsync();
+            //return await _shipShareDbContext.SenderPosts.Where(s => s.UserId == userId && s.IsConfirmed).ToListAsync();
         }
 
         public async Task<bool> SetStatusSenderPost(Guid postId, bool status)

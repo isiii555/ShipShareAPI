@@ -120,6 +120,24 @@ namespace ShipShareAPI.Persistence.Concretes.Auth
             await _mailService.SendMessageAsync(user.Email, "Email Confirmation", htmlContent, true);
         }
 
+        public async Task<bool> SendForgotPasswordEmail(string email)
+        {
+            var user = await FindByEmailAsync(email);
+            if (user is not null)
+            {
+                var token = _tokenHandler.GenerateEmailConfirmationToken(user);
+                user.PasswordResetToken = token.AccessToken;
+                _dbContext.Users.Update(user);
+                await _dbContext.SaveChangesAsync();
+                string htmlContent = File.ReadAllText("ForgotPassword.html");
+                var callbackUrl = $"{_configuration["AppBaseUrl"]}/api/auth/resetPassword/{HttpUtility.UrlEncode(token.AccessToken)}";
+                htmlContent = htmlContent.Replace("#link#", callbackUrl);
+                await _mailService.SendMessageAsync(user.Email, "Reset your password",htmlContent, true);
+                return true;
+            }
+            return false;
+        }
+
         public async Task<User?> UpdateConnectionId(string connectionId)
         {
             var userInfo = _requestUserProvider.GetUserInfo();

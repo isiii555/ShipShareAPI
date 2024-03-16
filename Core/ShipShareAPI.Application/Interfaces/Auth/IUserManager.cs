@@ -18,5 +18,6 @@ namespace ShipShareAPI.Application.Interfaces.Auth
         Task<User?> UpdateConnectionId(string connectionId);
         Task<bool> ConfirmEmail(Guid userId, string token);
         Task SendConfirmationEmail(User user);
+        Task<bool> SendForgotPasswordEmail(string email);
     }
 }

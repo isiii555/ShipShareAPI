@@ -10,5 +10,6 @@ namespace ShipShareAPI.Application.Interfaces.Token
         string CreateRefreshToken();
         bool VerifyEmailConfirmationToken(User user, string token);
         TokenDto GenerateEmailConfirmationToken(User user);
+        TokenDto GeneratePasswordResetToken(User user);
     }
 }

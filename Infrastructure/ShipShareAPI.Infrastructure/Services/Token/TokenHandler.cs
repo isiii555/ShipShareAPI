@@ -23,7 +23,7 @@ namespace ShipShareAPI.Infrastructure.Services.Token
             _jwtOptions = jwtOptions.Value;
         }
 
-        public TokenDto CreateAccessToken(User user,IEnumerable<Claim> claims)
+        public TokenDto CreateAccessToken(User user, IEnumerable<Claim> claims)
         {
             var token = new TokenDto();
 
@@ -38,7 +38,7 @@ namespace ShipShareAPI.Infrastructure.Services.Token
                 issuer: _jwtOptions.Issuer,
                 expires: token.Expiration,
                 notBefore: DateTime.UtcNow,
-                claims : claims,
+                claims: claims,
                 signingCredentials: signingCredentials);
 
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -68,7 +68,7 @@ namespace ShipShareAPI.Infrastructure.Services.Token
                 new Claim("userId", user.Id.ToString()),
                 new Claim(ClaimTypes.Email, user.Email),
                 // Add more claims as needed
-            }),
+                }),
                 Expires = DateTime.UtcNow.AddHours(24),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
@@ -79,6 +79,29 @@ namespace ShipShareAPI.Infrastructure.Services.Token
             return new()
             {
                 AccessToken = jwt,
+            };
+        }
+
+        public TokenDto GeneratePasswordResetToken(User user)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_jwtOptions.SecurityKey);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[]
+                {
+                new Claim("userId", user.Id.ToString()),
+                new Claim(ClaimTypes.Email, user.Email),
+                }),
+                Expires = DateTime.UtcNow.AddHours(24),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var jwt = tokenHandler.WriteToken(token);
+            return new()
+            {
+                AccessToken = jwt
             };
         }
 
@@ -95,7 +118,7 @@ namespace ShipShareAPI.Infrastructure.Services.Token
                 ValidateLifetime = true,
                 ValidateAudience = false,
                 ValidateIssuer = false,
-               
+
             };
 
             tokenHandler.ValidateToken(HttpUtility.UrlDecode(token), tokenValidationParameters, out SecurityToken validatedToken);
@@ -111,6 +134,5 @@ namespace ShipShareAPI.Infrastructure.Services.Token
             return false;
         }
 
-        
     }
 }

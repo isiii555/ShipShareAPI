@@ -68,10 +68,25 @@ namespace ShipShareAPI.API.Controllers
         }
 
         [HttpGet("confirmEmail/{userId}/{token}")]
-        public async Task<ActionResult<User>> ConfirmEmail(Guid userId, string token)
+        public async Task<ActionResult<bool>> ConfirmEmail(Guid userId, string token)
         {
             var result = await _userManager.ConfirmEmail(userId, token);
             return result ? Ok(result) : BadRequest(result);
+        }
+
+        [HttpGet("forgotPassword")]
+        public async Task<ActionResult<bool>> ForgotPassword([FromBody] string email)
+        {
+            var result = await _userManager.SendForgotPasswordEmail(email);
+            return result ? Ok(result) : BadRequest("User not found");
+        }
+
+        [HttpPost("resetPassword")]
+        public async Task<ActionResult<bool>> ResetPassword(string token)
+        {
+            return Ok(true);
+            //var result = await _userManager.SendForgotPasswordEmail(/*email*/);
+            //return result ? Ok(result) : BadRequest("User not found");
         }
     }
 }
