@@ -88,6 +88,13 @@ namespace ShipShareAPI.API.Controllers
             //var result = await _userManager.SendForgotPasswordEmail(/*email*/);
             //return result ? Ok(result) : BadRequest("User not found");
         }
+
+        [HttpGet("getMyDetails")]
+        public async Task<ActionResult<User>> GetMyDetails()
+        {
+            var user =  await _userManager.GetMyDetails();
+            return user is not null ? Ok(user) : BadRequest();
+        }
     }
 }
     

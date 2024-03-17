@@ -97,6 +97,13 @@ namespace ShipShareAPI.Persistence.Concretes.Auth
             return await _dbContext.Users.Include(u => u.Roles).FirstOrDefaultAsync(u => u.Email == email);
         }
 
+        public async Task<User?> GetMyDetails()
+        {
+            var userInfo = _requestUserProvider.GetUserInfo();
+            var user = await _dbContext.Users.FirstOrDefaultAsync(us => us.Id == userInfo!.Id);
+            return user;
+        }
+
         public async Task<User?> GetUserWithId(Guid userId)
         {
             return await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);

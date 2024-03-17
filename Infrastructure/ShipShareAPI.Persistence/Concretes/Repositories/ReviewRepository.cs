@@ -36,6 +36,7 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
             await _shipShareDbContext.SaveChangesAsync();
             _logger.LogInformation($"{user.Id} created review {newReview.Id}");
             var reviewDto = newReview.Adapt<ReviewDto>();
+            reviewDto.Username = user.Name;
             var newNotification = new CreateNotificationRequest()
             {
                UserId = user!.Id,
