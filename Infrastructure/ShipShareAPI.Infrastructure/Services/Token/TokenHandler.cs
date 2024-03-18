@@ -67,13 +67,10 @@ namespace ShipShareAPI.Infrastructure.Services.Token
                 {
                 new Claim("userId", user.Id.ToString()),
                 new Claim(ClaimTypes.Email, user.Email),
-                // Add more claims as needed
                 }),
                 Expires = DateTime.UtcNow.AddHours(24),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
-
-            // Create and encode token
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var jwt = tokenHandler.WriteToken(token);
             return new()
@@ -134,5 +131,33 @@ namespace ShipShareAPI.Infrastructure.Services.Token
             return false;
         }
 
+        public bool VerifyPasswordResetToken(User user, string token)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_jwtOptions.SecurityKey);
+
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                RequireExpirationTime = true,
+                ValidateLifetime = true,
+                ValidateAudience = false,
+                ValidateIssuer = false,
+
+            };
+
+            tokenHandler.ValidateToken(HttpUtility.UrlDecode(token), tokenValidationParameters, out SecurityToken validatedToken);
+
+            var jwtToken = (JwtSecurityToken)validatedToken;
+
+            var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "userId");
+
+            if (userIdClaim != null && Guid.Parse(userIdClaim.Value) == user.Id && jwtToken.ValidTo >= DateTime.UtcNow)
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

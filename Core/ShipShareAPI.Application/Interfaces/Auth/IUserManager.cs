@@ -1,4 +1,6 @@
-﻿using ShipShareAPI.Application.Dto.Token;
+﻿using ShipShareAPI.Application.Dto.Auth;
+using ShipShareAPI.Application.Dto.Token;
+using ShipShareAPI.Application.Response;
 using ShipShareAPI.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -11,6 +13,7 @@ namespace ShipShareAPI.Application.Interfaces.Auth
     public interface IUserManager
     {
         Task<User?> FindByEmailAsync(string email);
+        Task<User?> FindByEmailWithoutRolesAsync(string email);
         Task<TokenDto> CreateAsync(User user, string password);
         Task UpdateRefreshToken(User user,string refreshToken,DateTime accessTokenDate);
         Task<User?> GetUserWithId(Guid userId);
@@ -20,5 +23,6 @@ namespace ShipShareAPI.Application.Interfaces.Auth
         Task SendConfirmationEmail(User user);
         Task<bool> SendForgotPasswordEmail(string email);
         Task<User?> GetMyDetails();
+        Task<ResetPasswordResponse> ResetPassword(ResetPasswordRequest resetPasswordRequest);
     }
 }

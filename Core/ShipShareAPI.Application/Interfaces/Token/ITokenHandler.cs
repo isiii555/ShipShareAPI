@@ -9,6 +9,7 @@ namespace ShipShareAPI.Application.Interfaces.Token
         Dto.Token.TokenDto CreateAccessToken(User user, IEnumerable<Claim> claims);
         string CreateRefreshToken();
         bool VerifyEmailConfirmationToken(User user, string token);
+        bool VerifyPasswordResetToken(User user, string token);
         TokenDto GenerateEmailConfirmationToken(User user);
         TokenDto GeneratePasswordResetToken(User user);
     }

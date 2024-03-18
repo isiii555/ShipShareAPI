@@ -82,11 +82,10 @@ namespace ShipShareAPI.API.Controllers
         }
 
         [HttpPost("resetPassword")]
-        public async Task<ActionResult<bool>> ResetPassword(string token)
+        public async Task<ActionResult> ResetPassword([FromBody]ResetPasswordRequest resetPasswordRequest)
         {
-            return Ok(true);
-            //var result = await _userManager.SendForgotPasswordEmail(/*email*/);
-            //return result ? Ok(result) : BadRequest("User not found");
+            var result = await _userManager.ResetPassword(resetPasswordRequest);
+            return result.IsChanged ? Ok(new { status = result.Message }) : BadRequest(new{ status = result.Message });
         }
 
         [HttpGet("getMyDetails")]

@@ -1,12 +1,15 @@
 ﻿using Ardalis.GuardClauses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Configuration;
+using ShipShareAPI.Application.Dto.Auth;
 using ShipShareAPI.Application.Dto.Token;
 using ShipShareAPI.Application.Interfaces.Auth;
 using ShipShareAPI.Application.Interfaces.Providers;
 using ShipShareAPI.Application.Interfaces.Services;
 using ShipShareAPI.Application.Interfaces.Token;
+using ShipShareAPI.Application.Response;
 using ShipShareAPI.Domain.Entities;
 using ShipShareAPI.Persistence.Context;
 using ShipShareAPI.Persistence.Helpers;
@@ -97,6 +100,11 @@ namespace ShipShareAPI.Persistence.Concretes.Auth
             return await _dbContext.Users.Include(u => u.Roles).FirstOrDefaultAsync(u => u.Email == email);
         }
 
+        public async Task<User?> FindByEmailWithoutRolesAsync(string email)
+        {
+            return await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+        }
+
         public async Task<User?> GetMyDetails()
         {
             var userInfo = _requestUserProvider.GetUserInfo();
@@ -114,6 +122,38 @@ namespace ShipShareAPI.Persistence.Concretes.Auth
             return await _dbContext.Users.Include(u => u.Roles).FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
         }
 
+        public async Task<ResetPasswordResponse> ResetPassword(ResetPasswordRequest resetPasswordRequest)
+        {
+            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.PasswordResetToken == resetPasswordRequest.Token);
+            if (user is not null)
+            {
+                if (_tokenHandler.VerifyPasswordResetToken(user, resetPasswordRequest.Token))
+                {
+                    PasswordHashHelper.CreatePassword(resetPasswordRequest.Password, out byte[] salt, out byte[] passwordHash);
+                    user.PasswordHash = passwordHash;
+                    user.PasswordSalt = salt;
+                    user.PasswordResetToken = null;
+                    _dbContext.Users.Update(user);
+                    await _dbContext.SaveChangesAsync();
+                    return new()
+                    {
+                        Message = "Your password succesfully changed",
+                        IsChanged = true,
+                    };
+                }
+                return new()
+                {
+                    Message = "Reset password link is expired. Please send reset password request again!",
+                    IsChanged = false,
+                }; 
+            }
+            return new()
+            {
+                Message = "Reset password link is expired. Please send reset password request again!",
+                IsChanged = false,
+            };
+        }
+
         public async Task SendConfirmationEmail(User user)
         {
             var emailConfirmationToken = _tokenHandler.GenerateEmailConfirmationToken(user!);
@@ -129,17 +169,17 @@ namespace ShipShareAPI.Persistence.Concretes.Auth
 
         public async Task<bool> SendForgotPasswordEmail(string email)
         {
-            var user = await FindByEmailAsync(email);
+            var user = await FindByEmailWithoutRolesAsync(email);
             if (user is not null)
             {
-                var token = _tokenHandler.GenerateEmailConfirmationToken(user);
+                var token = _tokenHandler.GeneratePasswordResetToken(user);
                 user.PasswordResetToken = token.AccessToken;
                 _dbContext.Users.Update(user);
                 await _dbContext.SaveChangesAsync();
                 string htmlContent = File.ReadAllText("ForgotPassword.html");
-                var callbackUrl = $"{_configuration["AppBaseUrl"]}/api/auth/resetPassword/{HttpUtility.UrlEncode(token.AccessToken)}";
+                var callbackUrl = $"{_configuration["AppBaseUrl"]}/resetpassword/{HttpUtility.UrlEncode(token.AccessToken)}";
                 htmlContent = htmlContent.Replace("#link#", callbackUrl);
-                await _mailService.SendMessageAsync(user.Email, "Reset your password",htmlContent, true);
+                await _mailService.SendMessageAsync(user.Email, "Reset your password", htmlContent, true);
                 return true;
             }
             return false;
