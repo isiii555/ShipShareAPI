@@ -56,14 +56,14 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
 
         public async Task<List<TravellerPost>> GetAllPosts()
         {
-            return await _shipShareDbContext.TravellerPosts.ToListAsync();
+            return await _shipShareDbContext.TravellerPosts.Include(t => t.User).ToListAsync();
             //return await _shipShareDbContext.TravellerPosts.Where(p => p.IsConfirmed).ToListAsync();
         }
 
         public async Task<List<TravellerPost>> GetUserTravellerPosts()
         {
             var userId = _requestUserProvider.GetUserInfo()!.Id;
-            return await _shipShareDbContext.TravellerPosts.Where(s => s.UserId == userId).ToListAsync();
+            return await _shipShareDbContext.TravellerPosts.Include(t => t.User).Where(s => s.UserId == userId).ToListAsync();
             //return await _shipShareDbContext.TravellerPosts.Where(t => t.UserId == userId && t.IsConfirmed).ToListAsync();
         }
 

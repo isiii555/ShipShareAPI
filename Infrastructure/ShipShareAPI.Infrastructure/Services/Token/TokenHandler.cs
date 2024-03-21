@@ -31,7 +31,7 @@ namespace ShipShareAPI.Infrastructure.Services.Token
 
             var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            token.Expiration = DateTime.UtcNow.AddHours(5);
+            token.Expiration = DateTime.UtcNow.AddHours(1);
 
             JwtSecurityToken securityToken = new(
                 audience: _jwtOptions.Audience,

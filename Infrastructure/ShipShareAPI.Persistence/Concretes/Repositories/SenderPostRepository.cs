@@ -75,19 +75,19 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
 
         public async Task<List<SenderPost>> GetAllPosts()
         {
-            return await _shipShareDbContext.SenderPosts.ToListAsync();
+            return await _shipShareDbContext.SenderPosts.Include(p => p.User).ToListAsync();
             //return await _shipShareDbContext.SenderPosts.Where(p => p.IsConfirmed).ToListAsync();
         }
 
         public async Task<List<SenderPost>> GetAllPostsAdmin()
         {
-            return await _shipShareDbContext.SenderPosts.Where(p => p.IsDeclined == false).ToListAsync();
+            return await _shipShareDbContext.SenderPosts.Include(p => p.User).Where(p => p.IsDeclined == false).ToListAsync();
         }
 
         public async Task<List<SenderPost>> GetUserSenderPosts()
         {
             var userId = _requestUserProvider?.GetUserInfo()!.Id;
-            return await _shipShareDbContext.SenderPosts.Where(s => s.UserId == userId).ToListAsync();
+            return await _shipShareDbContext.SenderPosts.Include(p => p.User).Where(s => s.UserId == userId).ToListAsync();
             //return await _shipShareDbContext.SenderPosts.Where(s => s.UserId == userId && s.IsConfirmed).ToListAsync();
         }
 

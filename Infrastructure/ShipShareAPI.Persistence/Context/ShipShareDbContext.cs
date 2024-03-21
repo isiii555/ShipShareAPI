@@ -49,6 +49,7 @@ namespace ShipShareAPI.Persistence.Context
                 .WithMany(u => u.ReceivedReviews)
                 .HasForeignKey(r => r.ReviewRecipientId);
 
+
             modelBuilder.Entity<User>()
                 .HasMany(i => i.Conversations)
                 .WithMany(u => u.Users)
@@ -58,6 +59,7 @@ namespace ShipShareAPI.Persistence.Context
                 .HasMany(c => c.Messages)
                 .WithOne(m => m.Conversation)
                 .HasForeignKey(m => m.ConversationId);
+
 
             base.OnModelCreating(modelBuilder);
         }

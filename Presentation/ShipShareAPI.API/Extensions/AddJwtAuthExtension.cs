@@ -35,7 +35,6 @@ namespace ShipShareAPI.API.Extensions
                                 if (!string.IsNullOrEmpty(accessToken) &&
                                     (path.StartsWithSegments("/chat")))
                                 {
-                                    // получаем токен из строки запроса
                                     context.Token = accessToken;
                                 }
                                 return Task.CompletedTask;

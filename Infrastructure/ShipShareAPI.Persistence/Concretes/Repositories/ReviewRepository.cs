@@ -68,7 +68,7 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
         public async Task<List<Review>> GetAllReviews()
         {
             //return await _shipShareDbContext.Reviews.Where(p => p.IsConfirmed).ToListAsync();
-            return await _shipShareDbContext.Reviews.ToListAsync();
+            return await _shipShareDbContext.Reviews.Include(r => r.ReviewSender).ToListAsync();
         }
 
         public async Task<List<Review>> GetAllReviewsAdmin()
@@ -78,7 +78,7 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
 
         public async Task<List<Review>> GetUserReviews(Guid userId)
         {
-            return await _shipShareDbContext.Reviews.Where(r => r.ReviewRecipientId == userId).ToListAsync();
+            return await _shipShareDbContext.Reviews.Include(r => r.ReviewSender).Where(r => r.ReviewRecipientId == userId).ToListAsync();
             //return await _shipShareDbContext.Reviews.Where(r => r.ReviewRecipientId == userId && r.IsConfirmed).ToListAsync();
         }
 

@@ -48,10 +48,9 @@ namespace ShipShareAPI.API.Controllers
             {
                 var token = await _signInManager.SignInAsync(user, signInRequest.Password);
 
-                return token is not null ? Ok(token) : BadRequest("Password is wrong");
-
+                return token is not null ? Ok(token) : BadRequest(new {status = "Password is wrong"});
             }
-            return BadRequest("Email is wrong!");
+            return BadRequest(new {status = "Email is wrong"});
         }
 
         [HttpPost("refreshTokenSignIn")]
@@ -74,7 +73,7 @@ namespace ShipShareAPI.API.Controllers
             return result ? Ok(result) : BadRequest(result);
         }
 
-        [HttpGet("forgotPassword")]
+        [HttpPost("forgotPassword")]
         public async Task<ActionResult<bool>> ForgotPassword([FromBody] string email)
         {
             var result = await _userManager.SendForgotPasswordEmail(email);
