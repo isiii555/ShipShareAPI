@@ -37,7 +37,7 @@ namespace ShipShareAPI.API.Controllers
                 await _userManager.UpdateRefreshToken(user, token.RefreshToken, token.Expiration);
                 return Ok(token);
             }
-            return BadRequest("User with this email already exist!");
+            return BadRequest(new { status = "User with this email already exist!" });
         }
 
         [HttpPost("signIn")]
