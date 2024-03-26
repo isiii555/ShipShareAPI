@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Security.Claims;
 using System.Text;
 
 namespace ShipShareAPI.API.Extensions
@@ -9,7 +10,13 @@ namespace ShipShareAPI.API.Extensions
     {
         public static IServiceCollection AddJwtAuth(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            services
+                .AddAuthentication(options =>
+                    {
+                        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                        
+                    })
                     .AddJwtBearer(options =>
                     {
                         options.TokenValidationParameters = new()
@@ -18,8 +25,7 @@ namespace ShipShareAPI.API.Extensions
                             ValidateIssuer = true,
                             ValidateLifetime = true,
                             ValidateIssuerSigningKey = true,
-
-
+                            
                             ValidAudience = configuration["Token:Audience"],
                             ValidIssuer = configuration["Token:Issuer"],
                             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Token:SecurityKey"]!)),

@@ -51,7 +51,7 @@ namespace ShipShareAPI.Persistence.Concretes.Auth
             throw new Exception("User not found");
         }
 
-        public async Task<TokenDto> SignInAsync(User user,string password)
+        public async Task<TokenDto> SignInAsync(User user, string password)
         {
             List<string> roles = new();
             user!.Roles!.ForEach(r =>
@@ -68,8 +68,12 @@ namespace ShipShareAPI.Persistence.Concretes.Auth
                             new Claim(ClaimTypes.Name,user.Username),
                             new Claim(ClaimTypes.Email,user.Email),
                             new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
-                            new Claim(ClaimTypes.Role,string.Join(",",roles)),
                         };
+
+                    foreach (var role in roles)
+                    {
+                        claims.Add(new Claim(ClaimTypes.Role, role));
+                    }
                     var token = _tokenHandler.CreateAccessToken(user, claims);
                     await _userManager.UpdateRefreshToken(user, token.RefreshToken, token.Expiration);
                     return token;
