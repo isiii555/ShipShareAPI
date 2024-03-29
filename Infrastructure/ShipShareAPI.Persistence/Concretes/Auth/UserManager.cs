@@ -160,7 +160,7 @@ namespace ShipShareAPI.Persistence.Concretes.Auth
 
             string htmlContent = File.ReadAllText("EmailTemplate.html");
 
-            var callbackUrl = $"{_configuration["AppBaseUrl"]}/api/auth/confirmemail/{user.Id}/{HttpUtility.UrlEncode(emailConfirmationToken.AccessToken)}";
+            var callbackUrl = $"{_configuration["AppBaseUrl"]}/confirmemail/{user.Id}/{HttpUtility.UrlEncode(emailConfirmationToken.AccessToken)}";
 
             htmlContent = htmlContent.Replace("#link#", callbackUrl);
 

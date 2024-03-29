@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using ShipShareAPI.Application.Dto.Post.TravellerPost;
 using ShipShareAPI.Application.Interfaces.Repositories;
 using ShipShareAPI.Domain.Entities;
+using ShipShareAPI.Persistence.Concretes.Repositories;
 
 namespace ShipShareAPI.API.Controllers
 {
@@ -60,6 +61,14 @@ namespace ShipShareAPI.API.Controllers
         {
             var posts = await _travellerPostsRepository.GetUserTravellerPosts();
             return Ok(posts);
+        }
+
+        [HttpPost("increaseTravellerPostView/{postId}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> IncreaseTravellerPostView(Guid postId)
+        {
+            var result = await _travellerPostsRepository.IncreasePostView(postId);
+            return result ? Ok(result) : BadRequest(result);
         }
 
     }

@@ -17,5 +17,6 @@ namespace ShipShareAPI.Application.Interfaces.Repositories
         Task<bool> SetStatusTravellerPost(Guid postId, bool status);
         Task<bool> DeletePost(Guid postId);
         Task<List<TravellerPost>> GetUserTravellerPosts();
+        Task<bool> IncreasePostView(Guid postId);
     }
 }

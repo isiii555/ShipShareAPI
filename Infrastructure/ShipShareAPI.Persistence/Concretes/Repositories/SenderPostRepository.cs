@@ -75,8 +75,8 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
 
         public async Task<List<SenderPost>> GetAllPosts()
         {
-            return await _shipShareDbContext.SenderPosts.Include(p => p.User).ToListAsync();
-            //return await _shipShareDbContext.SenderPosts.Where(p => p.IsConfirmed).ToListAsync();
+            //return await _shipShareDbContext.SenderPosts.Include(p => p.User).ToListAsync();
+            return await _shipShareDbContext.SenderPosts.Include(p => p.User).Where(p => p.IsConfirmed).ToListAsync();
         }
 
         public async Task<List<SenderPost>> GetAllPostsAdmin()
@@ -87,8 +87,20 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
         public async Task<List<SenderPost>> GetUserSenderPosts()
         {
             var userId = _requestUserProvider?.GetUserInfo()!.Id;
-            return await _shipShareDbContext.SenderPosts.Include(p => p.User).Where(s => s.UserId == userId).ToListAsync();
-            //return await _shipShareDbContext.SenderPosts.Where(s => s.UserId == userId && s.IsConfirmed).ToListAsync();
+            return await _shipShareDbContext.SenderPosts.Include(p => p.User).Where(s => s.UserId == userId && s.IsConfirmed).ToListAsync();
+        }
+
+        public async Task<bool> IncreasePostView(Guid postId)
+        {
+            var post = await _shipShareDbContext.SenderPosts.FirstOrDefaultAsync(post => post.Id == postId);
+            if (post is not null)
+            {
+                post.Views += 1;
+                _shipShareDbContext.SenderPosts.Update(post);
+                await _shipShareDbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
         }
 
         public async Task<bool> SetStatusSenderPost(Guid postId, bool status)

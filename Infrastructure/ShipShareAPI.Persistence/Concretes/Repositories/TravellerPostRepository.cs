@@ -56,15 +56,13 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
 
         public async Task<List<TravellerPost>> GetAllPosts()
         {
-            return await _shipShareDbContext.TravellerPosts.Include(t => t.User).ToListAsync();
-            //return await _shipShareDbContext.TravellerPosts.Where(p => p.IsConfirmed).ToListAsync();
+            return await _shipShareDbContext.TravellerPosts.Include(p => p.User).Where(p => p.IsConfirmed).ToListAsync();
         }
 
         public async Task<List<TravellerPost>> GetUserTravellerPosts()
         {
-            var userId = _requestUserProvider.GetUserInfo()!.Id;
-            return await _shipShareDbContext.TravellerPosts.Include(t => t.User).Where(s => s.UserId == userId).ToListAsync();
-            //return await _shipShareDbContext.TravellerPosts.Where(t => t.UserId == userId && t.IsConfirmed).ToListAsync();
+            var user = _requestUserProvider?.GetUserInfo();
+            return await _shipShareDbContext.TravellerPosts.Include(p => p.User).Where(t => t.UserId == user!.Id && t.IsConfirmed).ToListAsync();
         }
 
         public async Task<TravellerPostDto?> UpdatePost(Guid postId, UpdateTravellerPostRequest updateTravellerPostRequest)
@@ -111,6 +109,19 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
         public async Task<List<TravellerPost>> GetAllPostsAdmin()
         {
             return await _shipShareDbContext.TravellerPosts.Where(p => p.IsDeclined == false).ToListAsync();
+        }
+
+        public async Task<bool> IncreasePostView(Guid postId)
+        {
+            var post = await _shipShareDbContext.TravellerPosts.FirstOrDefaultAsync(post => post.Id == postId);
+            if (post is not null)
+            {
+                post.Views += 1;
+                _shipShareDbContext.TravellerPosts.Update(post);
+                await _shipShareDbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
         }
     }
 }

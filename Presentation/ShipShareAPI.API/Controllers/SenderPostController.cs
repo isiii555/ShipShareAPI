@@ -62,5 +62,13 @@ namespace ShipShareAPI.API.Controllers
             var posts = await _senderPostsRepository.GetUserSenderPosts();
             return Ok(posts);
         }
+
+        [HttpPost("increaseSenderPostView/{postId}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> IncreaseSenderPostView(Guid postId)
+        {
+            var result = await _senderPostsRepository.IncreasePostView(postId);
+            return result ? Ok(result) : BadRequest(result);
+        }
     }
 }

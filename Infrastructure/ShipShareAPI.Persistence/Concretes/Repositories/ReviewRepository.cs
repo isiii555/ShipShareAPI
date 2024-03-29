@@ -67,19 +67,17 @@ namespace ShipShareAPI.Persistence.Concretes.Repositories
 
         public async Task<List<Review>> GetAllReviews()
         {
-            //return await _shipShareDbContext.Reviews.Where(p => p.IsConfirmed).ToListAsync();
-            return await _shipShareDbContext.Reviews.Include(r => r.ReviewSender).ToListAsync();
+            return await _shipShareDbContext.Reviews.Include(r => r.ReviewSender).Where(p => p.IsConfirmed).ToListAsync();
         }
 
         public async Task<List<Review>> GetAllReviewsAdmin()
         {
-            return await _shipShareDbContext.Reviews.Where(p => p.IsDeclined == false).ToListAsync();
+            return await _shipShareDbContext.Reviews.Include(r => r.ReviewSender).Include(r => r.ReviewRecipient).Where(p => p.IsDeclined == false).ToListAsync();
         }
 
         public async Task<List<Review>> GetUserReviews(Guid userId)
         {
-            return await _shipShareDbContext.Reviews.Include(r => r.ReviewSender).Where(r => r.ReviewRecipientId == userId).ToListAsync();
-            //return await _shipShareDbContext.Reviews.Where(r => r.ReviewRecipientId == userId && r.IsConfirmed).ToListAsync();
+            return await _shipShareDbContext.Reviews.Include(r => r.ReviewSender).Where(r => r.ReviewRecipientId == userId && r.IsConfirmed).ToListAsync();
         }
 
         public async Task<bool> SetStatusReview(Guid reviewId, bool status)
